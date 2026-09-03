@@ -1,0 +1,22 @@
+{
+  "base_commit": "4edf5dda470c5e525c5feb274462414751348b4b",
+  "files": {
+    "/home/pikachu/EBSPDSW/evobank/bank.py": "895d288b1863af2ee46285e039704522ea6e13e35746b9bfdd85d48b8aa8bf0a",
+    "/home/pikachu/EBSPDSW/evobank/data.py": "17f0e97ac34edd7a71da696e5ae02b5ec4c253852c45547e6cb71ba2b9a2c6dd",
+    "/home/pikachu/EBSPDSW/evobank/lew.py": "4b8b64311b47bc6a438a8fd1e93b9906f2da9f1642a558745aaf580ea12d5a63",
+    "/home/pikachu/EBSPDSW/evobank/make_tables.py": "01d42b19c22bb478845ca1b309e1a39179abf9b5e75e5d7ac9c42abb9374eac4",
+    "/home/pikachu/EBSPDSW/evobank/ot1d.py": "a5ab21c6f9d0f58cd8aaf2ae0caca077ad035fadbb45a6c87e47ff6a933cb958",
+    "/home/pikachu/EBSPDSW/evobank/svec.py": "98becc334f71404d6ff3aec00f81f4e444f9b84d747edee03584d5bd243175ea",
+    "/home/pikachu/EBSPDSW/evobank/trainer.py": "45ece814c0a83bde53ef2f999bce96998f9d82a9e1623ef43dd922a778754cb7",
+    "/home/pikachu/edubridge_SPDHSW/spdsw/spdhsw.py": "84c296ed6612883332d780e9db6e1a790fd7bd693a9eaa23f9ae0a87fc7045b3",
+    "/home/pikachu/edubridge_SPDHSW/spdsw/spdsw.py": "a1c7ee9e0512b7a1e45d3e6218d9a62357c33ac968f34e3208d07779e3015bf7",
+    "coherent_slicing/__init__.py": "86341be976f510d75337b6f61b237b539eb4fa63d0250b99ce1d077f1d7c31e4",
+    "coherent_slicing/aggregations.py": "fa11e9e303357495ee79ba0c601e6427f87e4872ec89a6a4ceaf73a7fdfd2c8a",
+    "experiments/run_moabb_pilot.py": "c85a466d30e696a05271cf2519e2fc57f9cd4f6a5d6388b6c460a91b1b0b208c",
+    "experiments/run_overnight.py": "1a4a4e81d3b4f5727ebd816a638d77f5e682b3d927a9fbb2b4b9ad57bb3a7954",
+    "tests/test_coherent_slicing.py": "d54a8e3a1ca44c5575381208dec62e5edc9dc739e462a54f3f8800513f960ff8"
+  },
+  "overnight_bundle_file_count": 239,
+  "overnight_bundle_sorted_hash_manifest_sha256": "e40bb36ee02d8384617628f7f3de975e2c67ea80f3103e34eded73f139ae99e9"
+}
+

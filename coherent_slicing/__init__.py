@@ -12,18 +12,27 @@ from .aggregations import (
 )
 from .directions import sample_unit_directions
 from .ot import directional_costs, w_p_power_per_direction
+from .spectral import (
+    LognormalSpectralResult,
+    lognormal_spectral_power,
+    lognormal_spectral_weights,
+    spectral_power,
+)
 
 __all__ = [
     "CVaRResult",
     "EVaRResult",
+    "LognormalSpectralResult",
     "cvar_power",
     "directional_costs",
     "ebsw_exp_power",
     "entropic_power",
     "evar_power",
+    "lognormal_spectral_power",
+    "lognormal_spectral_weights",
     "power_ebsw_power",
     "sample_unit_directions",
     "sw_power",
+    "spectral_power",
     "w_p_power_per_direction",
 ]
-
