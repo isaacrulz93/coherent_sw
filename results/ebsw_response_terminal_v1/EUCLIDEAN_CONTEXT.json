@@ -1,0 +1,24 @@
+{
+  "epochs": 100,
+  "euclidean_context_status": "run_frozen_E5_normalized_protocol",
+  "eval_L": 5000,
+  "eval_every": 10,
+  "invented_distribution": false,
+  "invented_learning_rate": false,
+  "methods": [
+    "sw",
+    "ebsw_full_b1",
+    "ebsw_stop_b1",
+    "ebsw_full_essmatch",
+    "ebsw_stop_essmatch"
+  ],
+  "seeds": [
+    6398,
+    3654,
+    1788
+  ],
+  "solver_failures": 0,
+  "target_normalized_step": 0.021952907087918014,
+  "terminal_gate": false,
+  "train_L": 100
+}
