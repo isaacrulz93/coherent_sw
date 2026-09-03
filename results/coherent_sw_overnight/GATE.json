@@ -1,0 +1,9 @@
+{
+  "decision": "stop_after_hgd_null",
+  "full_hgd_expansion_run": false,
+  "hgd_same_l_improvement": false,
+  "hierarchical_spdhsw_run": false,
+  "normalized_gradient_improvement": false,
+  "pass": false,
+  "passing_settings": []
+}

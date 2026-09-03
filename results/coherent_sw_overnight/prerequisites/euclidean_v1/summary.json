@@ -1,0 +1,40 @@
+{
+  "elapsed_seconds": 16.12190501112491,
+  "failures": [],
+  "summaries": {
+    "E1": {
+      "exact_direct": 3.9269908169872414,
+      "exact_leg": 1.917991608711982,
+      "exact_power_ebsw_violation": 0.09100759956327753,
+      "independent_control_max_slack": 0.004593659935446026,
+      "worst_cvar_shared_slack": 4.440892098500626e-16,
+      "worst_evar_shared_slack": -0.015621647745915013
+    },
+    "E2": {
+      "ebsw_D_over_c_range": 0.3214225199746874,
+      "evar_D_over_c_range": 0.0,
+      "evar_KL_range": 0.0
+    },
+    "E3": {
+      "max_sw_reference": 1.282687389618642,
+      "rows": 13
+    },
+    "E4": {
+      "max_rmse": 0.48532462510018554,
+      "reference_L": 20000,
+      "repeats": 16
+    },
+    "E5": {
+      "diverged_records": 0,
+      "final_normalized": {
+        "cvar": 2.555660439948496,
+        "ebsw_exp": 2.5563132399198367,
+        "evar": 2.5542188598821696,
+        "sampled_max": 2.5563821826789965,
+        "sw": 2.553518066908863
+      },
+      "runs": 60,
+      "target_normalized_step_norm": 0.021952907087918014
+    }
+  }
+}

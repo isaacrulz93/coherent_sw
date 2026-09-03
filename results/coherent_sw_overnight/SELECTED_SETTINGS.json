@@ -1,0 +1,7 @@
+{
+  "cvar": "cvar_a0p5",
+  "ebsw_exp": "ebsw_exp_default_b1",
+  "evar": "evar_k0p1",
+  "selected_after_only_common_lr10000_base_grid": true,
+  "selection_rule": "one global setting per EBSW/EVaR/CVaR family, chosen by mean relative LEW AUC over all 3x3 HGD subject-seed pairs; divergence count breaks ties first"
+}

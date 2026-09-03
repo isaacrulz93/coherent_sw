@@ -1,0 +1,6 @@
+{
+  "formula": "1 / median initial directional-cost std over HGD 3 subjects x 3 seeds",
+  "median_initial_h_std": 0.0020590071101365182,
+  "normalized_step_target": 7.3473173386245945,
+  "scale_matched_beta": 485.67097951094354
+}

@@ -1,0 +1,3 @@
+family,method,same_lr_improved_subjects,normalized_improved_subjects,significantly_more_unstable,sampled_max_endpoint_like,passes
+evar,evar_k0p1,0,0,True,False,False
+cvar,cvar_a0p5,0,0,True,False,False

@@ -1,0 +1,105 @@
+{
+  "E1": {
+    "angular_directions": 262144
+  },
+  "E2": {
+    "directions": 4096,
+    "scales": [
+      0.25,
+      0.5,
+      1.0,
+      2.0,
+      4.0
+    ]
+  },
+  "E3": {
+    "alphas": [
+      1.0,
+      0.5,
+      0.2,
+      0.1,
+      0.05,
+      0.02
+    ],
+    "directions": 4096,
+    "kappas": [
+      0.0,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1.0,
+      2.0
+    ]
+  },
+  "E4": {
+    "L": [
+      20,
+      40,
+      100,
+      200,
+      500,
+      1000
+    ],
+    "dimensions": [
+      16,
+      64,
+      256
+    ],
+    "reference_L": 20000,
+    "repeats": 16,
+    "samples": 96
+  },
+  "E5": {
+    "epochs": 100,
+    "eval_L": 5000,
+    "eval_every": 10,
+    "learning_rates": {
+      "cvar": [
+        0.01,
+        0.03,
+        0.1
+      ],
+      "ebsw_exp": [
+        0.003,
+        0.01,
+        0.03
+      ],
+      "evar": [
+        0.01,
+        0.03,
+        0.1
+      ],
+      "sampled_max": [
+        0.003,
+        0.01,
+        0.03
+      ],
+      "sw": [
+        0.01,
+        0.03,
+        0.1
+      ]
+    },
+    "normalized_reference_lr": 0.03,
+    "seeds": [
+      6398,
+      3654,
+      1788
+    ],
+    "train_L": 100
+  },
+  "created_before_experiment": true,
+  "cvar_alpha": 0.2,
+  "dtype": "float64",
+  "evar_kappa": 0.5,
+  "fixed_beta": 2.0,
+  "p": 2,
+  "platform": "Linux-6.8.0-87-generic-x86_64-with-glibc2.35",
+  "power_gamma": 1.0,
+  "python": "3.10.19",
+  "quick": false,
+  "seed": 6398,
+  "torch": "2.11.0+cu130",
+  "version": "euclidean_v1"
+}
