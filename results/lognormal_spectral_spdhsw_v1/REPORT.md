@@ -89,7 +89,7 @@ PYTHONPATH=. /home/pikachu/miniconda3/envs/spdsw_hsw/bin/python -u -m experiment
 - Python 3.10.19, PyTorch 2.11.0+cu130, CUDA runtime 13.0.
 - Host: affctiv; branch: exp/lognormal-spectral-spdhsw-v1.
 - Starting direct-pilot commit: 4edf5dda470c5e525c5feb274462414751348b4b; audit/tests checkpoint: 39bc01f2aec9e9cd1b5d145319c53d601cc9fd86; synthetic checkpoint: dfc7645eee08ef714a0589ec638ad4ca6f18b30c.
-- Finalization parent commit: dfc7645eee08ef714a0589ec638ad4ca6f18b30c.
+- Development/null checkpoint: 488672c609b04caceef5cac760412c1025429c3d.
 - Device: physical GPU 3, NVIDIA RTX 6000 Ada Generation.
 
 ## Scope and claims
