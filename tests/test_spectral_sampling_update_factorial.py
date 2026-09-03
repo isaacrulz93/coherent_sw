@@ -4,6 +4,7 @@ import inspect
 import math
 
 import numpy as np
+import pandas as pd
 import pytest
 import torch
 
@@ -163,6 +164,34 @@ def test_exact_threshold_first_hit_has_no_interpolation() -> None:
     assert experiment.exact_first_hit(values, 0.80) == 3
     assert experiment.exact_first_hit(values, 0.70) is None
     assert experiment.THRESHOLDS == (0.95, 0.90, 0.80, 0.70, 0.60)
+
+
+def test_fastest_threshold_requires_all_nine_runs_to_reach() -> None:
+    rows = []
+    for method in ("partial_fast", "complete_slower"):
+        for index in range(9):
+            reached = method == "complete_slower" or index == 0
+            rows.append({
+                "method": method, "threshold_relative_lew": 0.8,
+                "reached": reached,
+                "first_reach_epoch": (1 if method == "partial_fast" else 10) if reached else math.nan,
+            })
+    frame = pd.DataFrame(rows)
+    assert experiment.fastest_threshold(frame, 0.8) == "complete_slower"
+
+
+def test_factorial_effects_include_all_registered_interaction_families() -> None:
+    rows = []
+    for method in experiment.METHODS:
+        rows.append({
+            "sampling": method.sampling, "aggregation": method.aggregation,
+            "update": method.update, "subject": 1, "seed": 6398,
+            "relative_lew_auc": 1.0,
+        })
+    effects = experiment.factorial_effect_rows(pd.DataFrame(rows))
+    assert {"spectral_x_sampling", "spectral_x_update", "sampling_x_update"}.issubset(
+        set(effects.effect)
+    )
 
 
 def test_evaluation_time_is_separate_from_optimization_components() -> None:

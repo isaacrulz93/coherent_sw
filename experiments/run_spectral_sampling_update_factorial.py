@@ -862,7 +862,7 @@ def metadata_from_frame(path: Path, diagnostics: Path) -> dict[str, object]:
     return {
         "dataset": DATASET, "method": str(frame.method.iloc[0]),
         "sampling": str(frame.sampling.iloc[0]), "aggregation": str(frame.aggregation.iloc[0]),
-        "update": str(frame.update.iloc[0]), "subject": int(frame.subject.iloc[0]),
+        "update": str(frame["update"].iloc[0]), "subject": int(frame.subject.iloc[0]),
         "seed": int(frame.seed.iloc[0]), "epochs": EPOCHS, "N_proj": N_PROJ,
         "sigma": float(frame.sigma.iloc[0]), "rows": len(frame),
         "diagnostic_rows": len(read_typed_csv(diagnostics, diagnostic=True)),
@@ -1037,7 +1037,7 @@ def paired_quality_reach(frame: pd.DataFrame) -> pd.DataFrame:
             rows.append({
                 "reference_type": "best_uniform_final_descriptive",
                 "sampling": str(candidate.sampling.iloc[0]),
-                "update": str(candidate.update.iloc[0]), "subject": subject, "seed": seed,
+                "update": str(candidate["update"].iloc[0]), "subject": subject, "seed": seed,
                 "method": method, "quality_lew": quality,
                 "method_first_reach_epoch": (float(reached.epoch.iloc[0]) if not reached.empty else math.nan),
                 "method_first_reach_optimization_ms": (
@@ -1059,7 +1059,7 @@ def factorial_effect_rows(summary: pd.DataFrame) -> pd.DataFrame:
     index = ["subject", "seed"]
     for sampling in ("fixed", "resampled"):
         for update in ("normalized_power", "raw_power", "raw_rooted"):
-            cell = summary[(summary.sampling == sampling) & (summary.update == update)]
+            cell = summary[(summary.sampling == sampling) & (summary["update"] == update)]
             pivot = cell.pivot(index=index, columns="aggregation", values="relative_lew_auc")
             for (subject, seed), values in pivot.iterrows():
                 rows.append({
@@ -1069,7 +1069,7 @@ def factorial_effect_rows(summary: pd.DataFrame) -> pd.DataFrame:
                 })
     for aggregation in ("uniform", "spectral"):
         for update in ("normalized_power", "raw_power", "raw_rooted"):
-            cell = summary[(summary.aggregation == aggregation) & (summary.update == update)]
+            cell = summary[(summary.aggregation == aggregation) & (summary["update"] == update)]
             pivot = cell.pivot(index=index, columns="sampling", values="relative_lew_auc")
             for (subject, seed), values in pivot.iterrows():
                 rows.append({
@@ -1079,7 +1079,7 @@ def factorial_effect_rows(summary: pd.DataFrame) -> pd.DataFrame:
                 })
     # Per-run two-factor contrasts. Three-way structure remains visible in the labels.
     for update in ("normalized_power", "raw_power", "raw_rooted"):
-        cell = summary[summary.update == update]
+        cell = summary[summary["update"] == update]
         pivot = cell.pivot(index=index, columns=["sampling", "aggregation"], values="relative_lew_auc")
         for (subject, seed), values in pivot.iterrows():
             interaction = (
@@ -1091,6 +1091,41 @@ def factorial_effect_rows(summary: pd.DataFrame) -> pd.DataFrame:
                 "update": update, "aggregation": "interaction", "subject": subject,
                 "seed": seed, "difference": float(interaction),
             })
+    update_pairs = (
+        ("normalized_power", "raw_power"),
+        ("normalized_power", "raw_rooted"),
+        ("raw_power", "raw_rooted"),
+    )
+    for sampling in ("fixed", "resampled"):
+        cell = summary[summary.sampling == sampling]
+        pivot = cell.pivot(
+            index=index, columns=["update", "aggregation"], values="relative_lew_auc"
+        )
+        for first_update, second_update in update_pairs:
+            for (subject, seed), values in pivot.iterrows():
+                first_effect = values[(first_update, "spectral")] - values[(first_update, "uniform")]
+                second_effect = values[(second_update, "spectral")] - values[(second_update, "uniform")]
+                rows.append({
+                    "effect": "spectral_x_update", "sampling": sampling,
+                    "update": f"{second_update}-minus-{first_update}",
+                    "aggregation": "spectral-effect contrast", "subject": subject,
+                    "seed": seed, "difference": float(second_effect - first_effect),
+                })
+    for aggregation in ("uniform", "spectral"):
+        cell = summary[summary.aggregation == aggregation]
+        pivot = cell.pivot(
+            index=index, columns=["update", "sampling"], values="relative_lew_auc"
+        )
+        for first_update, second_update in update_pairs:
+            for (subject, seed), values in pivot.iterrows():
+                first_effect = values[(first_update, "resampled")] - values[(first_update, "fixed")]
+                second_effect = values[(second_update, "resampled")] - values[(second_update, "fixed")]
+                rows.append({
+                    "effect": "sampling_x_update", "sampling": "resampling-effect contrast",
+                    "update": f"{second_update}-minus-{first_update}",
+                    "aggregation": aggregation, "subject": subject, "seed": seed,
+                    "difference": float(second_effect - first_effect),
+                })
     return pd.DataFrame(rows)
 
 
@@ -1189,8 +1224,16 @@ def bank_audit(frame: pd.DataFrame) -> dict[str, object]:
             resampled = cell[(cell.sampling == "resampled") & (cell.epoch > 0)]
             fixed_hashes = fixed.groupby("method").bank_hash.apply(lambda x: sorted(set(x)))
             fixed_common = {values[0] for values in fixed_hashes if len(values) == 1}
-            epoch_common = all(
+            epoch_seed_common = all(
                 len(set(group.bank_seed.astype(int))) == 1
+                for _, group in resampled.groupby("epoch")
+            )
+            epoch_hash_common = all(
+                group.bank_hash.nunique() == 1
+                for _, group in resampled.groupby("epoch")
+            )
+            epoch_target_hash_common = all(
+                group.target_projection_hash.nunique() == 1
                 for _, group in resampled.groupby("epoch")
             )
             resampled_changes = all(
@@ -1207,7 +1250,10 @@ def bank_audit(frame: pd.DataFrame) -> dict[str, object]:
                 "subject": subject, "seed": seed,
                 "fixed_six_share_one_hash": len(fixed_common) == 1,
                 "fixed_hash_constant_all_epochs": all(len(values) == 1 for values in fixed_hashes),
-                "resampled_six_share_each_epoch_seed": epoch_common,
+                "fixed_target_projection_hash_constant": fixed.target_projection_hash.nunique() == 1,
+                "resampled_six_share_each_epoch_seed": epoch_seed_common,
+                "resampled_six_share_each_epoch_hash": epoch_hash_common,
+                "resampled_six_share_each_epoch_target_projection_hash": epoch_target_hash_common,
                 "resampled_each_method_changes_all_epochs": resampled_changes,
                 "fixed_resampled_epoch0_seed_equal": fixed_epoch0 == resampled_epoch0,
                 "fixed_resampled_epoch0_hash_equal": fixed_epoch0_hash == resampled_epoch0_hash,
@@ -1221,7 +1267,10 @@ def bank_audit(frame: pd.DataFrame) -> dict[str, object]:
         for row in checks
         for check in (
             "fixed_six_share_one_hash", "fixed_hash_constant_all_epochs",
+            "fixed_target_projection_hash_constant",
             "resampled_six_share_each_epoch_seed",
+            "resampled_six_share_each_epoch_hash",
+            "resampled_six_share_each_epoch_target_projection_hash",
             "resampled_each_method_changes_all_epochs",
             "fixed_resampled_epoch0_seed_equal",
             "fixed_resampled_epoch0_hash_equal",
@@ -1240,7 +1289,7 @@ def bank_audit(frame: pd.DataFrame) -> dict[str, object]:
 
 
 def classify_spectral_effect(summary: pd.DataFrame, sampling: str, update: str) -> str:
-    cell = summary[(summary.sampling == sampling) & (summary.update == update)]
+    cell = summary[(summary.sampling == sampling) & (summary["update"] == update)]
     pivot = cell.pivot(index=["subject", "seed"], columns="aggregation", values="relative_lew_auc")
     differences = pivot.spectral - pivot.uniform
     subject_means = differences.groupby(level="subject").mean()
@@ -1252,12 +1301,14 @@ def classify_spectral_effect(summary: pd.DataFrame, sampling: str, update: str) 
 
 
 def fastest_threshold(thresholds: pd.DataFrame, threshold: float) -> str:
-    cell = thresholds[
-        np.isclose(thresholds.threshold_relative_lew, threshold) & thresholds.reached
-    ]
+    cell = thresholds[np.isclose(thresholds.threshold_relative_lew, threshold)]
     if cell.empty:
         return "NONE"
-    means = cell.groupby("method").first_reach_epoch.mean().sort_values()
+    complete = cell.groupby("method").reached.agg(["sum", "count"])
+    eligible = complete[complete["sum"] == complete["count"]].index
+    if len(eligible) == 0:
+        return "NONE (no method reached in all 9 runs)"
+    means = cell[cell.method.isin(eligible)].groupby("method").first_reach_epoch.mean().sort_values()
     fastest = means[means == means.iloc[0]].index.tolist()
     return " / ".join(fastest)
 
@@ -1266,8 +1317,13 @@ def plot_trajectory(frame: pd.DataFrame, sampling: str, x: str, filename: str) -
     subset = frame[frame.sampling == sampling]
     plt.figure(figsize=(10, 6))
     for method, group in subset.groupby("method", sort=False):
-        curve = group.groupby("epoch")[[x, "relative_lew"]].mean().sort_index()
-        plt.plot(curve[x], curve.relative_lew, label=method.replace(f"{sampling}_", ""), linewidth=1.5)
+        if x == "epoch":
+            curve = group.groupby("epoch").relative_lew.mean().sort_index()
+            x_values, y_values = curve.index, curve.values
+        else:
+            curve = group.groupby("epoch")[[x, "relative_lew"]].mean().sort_index()
+            x_values, y_values = curve[x], curve.relative_lew
+        plt.plot(x_values, y_values, label=method.replace(f"{sampling}_", ""), linewidth=1.5)
     plt.xlabel("epoch" if x == "epoch" else "cumulative optimization ms")
     plt.ylabel("relative independent LEW")
     plt.legend(fontsize=7, ncol=2)
@@ -1278,7 +1334,7 @@ def plot_trajectory(frame: pd.DataFrame, sampling: str, x: str, filename: str) -
 
 def plot_effects(subjects: pd.DataFrame, effect: str, filename: str) -> None:
     grand = subjects[(subjects.level == "grand") & (subjects.effect == effect)]
-    labels = [f"{row.sampling}\n{row.update}\n{row.aggregation}" for _, row in grand.iterrows()]
+    labels = [f"{row.sampling}\n{row['update']}\n{row.aggregation}" for _, row in grand.iterrows()]
     plt.figure(figsize=(10, 5))
     plt.bar(np.arange(len(grand)), grand["mean"])
     plt.axhline(0.0, color="black", linewidth=0.8)
@@ -1385,27 +1441,38 @@ def key_interpretation_table(
     paired = paired[paired.reference_type == "paired_uniform_final"]
     for sampling in ("fixed", "resampled"):
         for update in ("normalized_power", "raw_power", "raw_rooted"):
-            cell = summary[(summary.sampling == sampling) & (summary.update == update)]
+            cell = summary[(summary.sampling == sampling) & (summary["update"] == update)]
             auc = cell.groupby("aggregation").relative_lew_auc.mean()
             threshold_summary = {}
             for threshold, label in ((0.8, "20pct"), (0.7, "30pct")):
                 reach = thresholds[
-                    (thresholds.sampling == sampling) & (thresholds.update == update)
+                    (thresholds.sampling == sampling) & (thresholds["update"] == update)
                     & np.isclose(thresholds.threshold_relative_lew, threshold)
                 ]
-                means = reach.groupby("aggregation").first_reach_epoch.mean()
-                threshold_summary[label] = (
-                    float(means.get("uniform", math.nan) - means.get("spectral", math.nan))
-                    if "uniform" in means and "spectral" in means else math.nan
+                pivot = reach.pivot(
+                    index=["subject", "seed"], columns="aggregation",
+                    values="first_reach_epoch",
                 )
-            pair_speed = paired[(paired.sampling == sampling) & (paired.update == update)]
+                paired_hits = pivot.dropna(subset=["uniform", "spectral"])
+                threshold_summary[label] = (
+                    float((paired_hits.uniform - paired_hits.spectral).mean())
+                    if not paired_hits.empty else math.nan
+                )
+                threshold_summary[f"{label}_paired_n"] = len(paired_hits)
+                threshold_summary[f"{label}_uniform_hits"] = int(pivot.uniform.notna().sum())
+                threshold_summary[f"{label}_spectral_hits"] = int(pivot.spectral.notna().sum())
+            pair_speed = paired[(paired.sampling == sampling) & (paired["update"] == update)]
             rows.append({
                 "Sampling": sampling.title(), "Update": update,
                 "Uniform AUC": float(auc["uniform"]),
                 "Spectral AUC": float(auc["spectral"]),
                 "Delta": float(auc["spectral"] - auc["uniform"]),
                 "20% threshold speedup (epochs)": threshold_summary["20pct"],
+                "20% paired n": threshold_summary["20pct_paired_n"],
+                "20% hits U/S": f"{threshold_summary['20pct_uniform_hits']}/{threshold_summary['20pct_spectral_hits']}",
                 "30% threshold speedup (epochs)": threshold_summary["30pct"],
+                "30% paired n": threshold_summary["30pct_paired_n"],
+                "30% hits U/S": f"{threshold_summary['30pct_uniform_hits']}/{threshold_summary['30pct_spectral_hits']}",
                 "Paired-final speedup (epochs)": float(pair_speed.spectral_epoch_speedup.mean()),
             })
     return pd.DataFrame(rows)
@@ -1436,6 +1503,40 @@ def write_report(
     gradient = diagnostics[np.isfinite(diagnostics.uniform_spectral_cosine)].groupby(
         ["sampling", "update", "epoch"], as_index=False
     ).uniform_spectral_cosine.mean()
+    concentration = diagnostics[
+        (diagnostics.aggregation == "spectral")
+        & np.isfinite(diagnostics.spectral_effective_N)
+    ][[
+        "spectral_effective_N", "spectral_entropy", "spectral_max_weight",
+        "spectral_top5_mass", "spectral_top10_mass",
+    ]].drop_duplicates()
+    threshold_detail = thresholds[
+        thresholds.threshold_relative_lew.isin([0.8, 0.7])
+    ].groupby(
+        ["sampling", "aggregation", "update", "threshold_relative_lew"],
+        as_index=False,
+    ).agg(
+        reached_runs=("reached", "sum"),
+        total_runs=("reached", "size"),
+        mean_first_reach_epoch=("first_reach_epoch", "mean"),
+        mean_first_reach_optimization_ms=("first_reach_optimization_ms", "mean"),
+    )
+    timing_cells = timing.groupby(
+        ["sampling", "aggregation", "update"], as_index=False
+    ).agg(
+        mean_cumulative_optimization_ms=("cumulative_optimization_ms", "mean"),
+        mean_cumulative_evaluation_ms=("cumulative_evaluation_ms", "mean"),
+        mean_direction_sampling_ms=("sum_direction_sampling_ms", "mean"),
+        mean_source_projection_ms=("sum_source_projection_ms", "mean"),
+        mean_target_projection_ms=("sum_target_projection_ms", "mean"),
+        mean_wasserstein_1d_ms=("sum_wasserstein_1d_ms", "mean"),
+        mean_sorting_aggregation_ms=("sum_sorting_aggregation_ms", "mean"),
+        mean_backward_ms=("sum_backward_ms", "mean"),
+        mean_optimizer_update_ms=("sum_optimizer_update_ms", "mean"),
+    )
+    effect_grand = subjects[subjects.level == "grand"][[
+        "effect", "sampling", "update", "aggregation", "mean", "median", "sd"
+    ]]
     fixed_final = overfit[overfit.epoch == EPOCHS].groupby(
         ["aggregation", "update"], as_index=False
     )[["training_loss_reduction_pct", "independent_LEW_reduction_pct", "overfit_gap"]].mean()
@@ -1483,15 +1584,25 @@ All 501 independently evaluated states per trajectory are retained in the per-ru
 
 The preregistered thresholds were relative LEW 0.95, 0.90, 0.80, 0.70, and 0.60. `THRESHOLD_RESULTS.csv` records the first actually observed hit, with no interpolation. The fastest average method at 20% reduction was **{fastest20}**; at 30% reduction it was **{fastest30}**.
 
+The means below are over reached runs only, while `reached_runs/total_runs` exposes censoring explicitly. “Fastest” above requires 9/9 reaches, preventing an incomplete method from winning by NA exclusion.
+
+{frame_markdown(threshold_detail)}
+
 ## 5. Threshold-reaching wall-clock
 
 Optimization wall-clock includes fixed one-time bank sampling and target projection setup. It excludes all independent LEW evaluation and paired-gradient diagnostic time. `THRESHOLD_RESULTS.csv` supplies both first-hit epoch and cumulative optimization time. `TIMING.csv` separately reports evaluation overhead and each requested optimization component.
+
+{frame_markdown(timing_cells)}
 
 ## 6. Paired-uniform-quality reach
 
 `PAIRED_QUALITY_REACH.csv` uses each sampling/update/subject/seed uniform epoch-500 LEW as the paired target. Positive spectral speedup means spectral reached that quality earlier. The optional best-uniform-final rows are clearly marked descriptive and were not used for primary claims.
 
 ## 7. Gradient/update magnitudes
+
+The sigma-1 finite-weight concentration was fixed throughout all spectral runs:
+
+{frame_markdown(concentration)}
 
 {frame_markdown(gradient)}
 
@@ -1505,7 +1616,11 @@ The fixed-bank objective value attached to each post-update epoch row is the pre
 
 ## 9. Sampling interactions
 
-`SUBJECT_RESULTS.csv` contains run-level, seed-mean, subject-mean, and grand-mean spectral and sampling effects plus the spectral × sampling interaction within each update formulation. With three subjects these are descriptive paired effects, not significance tests. Update-formulation dependence is read by comparing the three registered within-sampling spectral contrasts; no formal significance claim is made.
+`SUBJECT_RESULTS.csv` contains run-level, seed-mean, subject-mean, and grand-mean spectral and sampling effects, spectral × sampling interactions, pairwise spectral × update interactions, and pairwise sampling × update interactions.
+
+{frame_markdown(effect_grand)}
+
+With three subjects these are descriptive paired effects, not significance tests.
 
 ## 10. Interpretation
 
@@ -1514,6 +1629,10 @@ Spectral weighting changes both gradient direction and magnitude. Normalized res
 “EBSW-style” here means only optimizing the rooted distance with its raw gradient under a common outer-flow philosophy. Conventional exponential IS-EBSW differentiates through energy-dependent weights and therefore includes a weight-response gradient term. The lognormal rank weights here are detached and piecewise fixed: within an ordering region `grad F_spec = sum_i w_i grad h_(i)` and there is no `grad(w_i)` term. Rooted spectral is therefore not algebraically identical to exponential EBSW.
 
 Sigma 1 was preregistered, not optimized. No learning-rate sweep was performed. Thresholds not reached are not extrapolated, and fixed-bank outcomes are not treated as population SPDSW evidence.
+
+Numerically, the registered pattern is Case B together with Case F. Spectral improved raw-power AUC within fixed support (Delta = -0.002890) and especially under resampling (Delta = -0.019611), but worsened raw-rooted AUC within fixed (Delta = +0.003053) and resampled (Delta = +0.022098) conditions. Under resampling it also worsened normalized AUC (Delta = +0.036120). Thus the raw-power gain is sensitive to the power-versus-root objective scaling and does not provide robust spectral-geometry evidence; an LR-equivalence audit would be required before further development. The raw-rooted failure in both sampling regimes means the weak spectral result cannot be attributed merely to normalized updates or merely to having optimized the p-th power instead of the rooted distance.
+
+Resampling was substantially better than fixed support across every registered aggregation/update cell. Fixed training-objective reductions of 87.6–100.0% accompanied only about 20.0–20.6% independent-LEW reductions, leaving mean overfit gaps of 67.6–79.3 percentage points. This is an alignment diagnostic, not a downstream classification claim.
 """
     (OUT / "REPORT.md").write_text(text)
 
