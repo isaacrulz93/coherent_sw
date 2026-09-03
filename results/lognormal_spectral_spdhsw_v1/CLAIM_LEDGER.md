@@ -19,9 +19,14 @@
 
 ## Empirical findings
 
-- Synthetic and HGD findings are descriptive for the registered dimensions,
-  subjects, seeds, candidate counts, sigma grid, and optimization controls.
-- A gate failure is retained as a null result and stops later expansion.
+- The registered synthetic interaction gate passed in m=253, 2016, and 8256.
+- In HGD development subjects 2, 3, and 4, every registered nonzero sigma had
+  worse mean normalized-update relative LEW AUC than uniform normalized
+  SPDHSW. The selected sigma 0.5 differed by +0.00354608 (lower is better)
+  and improved 0 of 3 subjects.
+- The failed development gate stopped held-out HGD, raw-SGD controls, matched
+  concentration baselines, and BNCI transfer. No inference about those unrun
+  phases is made.
 
 ## Unsupported or prohibited claims
 

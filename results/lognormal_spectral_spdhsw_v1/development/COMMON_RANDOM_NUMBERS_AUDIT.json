@@ -1,0 +1,38 @@
+{
+  "bank_seed_unique_count_max_within_epoch_group": 1,
+  "divergence_count": 0,
+  "evaluation_epochs": [
+    0,
+    25,
+    50,
+    75,
+    100
+  ],
+  "expected_evaluation_epochs": [
+    0,
+    25,
+    50,
+    75,
+    100
+  ],
+  "expected_rows_per_run": 101,
+  "expected_run_csv_count": 33,
+  "heldout_phase_run": false,
+  "initial_directional_field_ranges": {
+    "direct_max_h_max_range": 0.0,
+    "direct_mean_h_max_range": 0.0,
+    "direct_min_h_max_range": 0.0,
+    "direct_std_h_max_range": 0.0,
+    "hierarchical_max_h_max_range": 0.0,
+    "hierarchical_mean_h_max_range": 0.0,
+    "hierarchical_min_h_max_range": 0.0,
+    "hierarchical_std_h_max_range": 0.0
+  },
+  "mix_seed_unique_count_max_within_hierarchical_epoch_group": 1,
+  "nan_count": 0,
+  "rows_per_run_values": [
+    101
+  ],
+  "run_csv_count": 33,
+  "validation_pass": true
+}

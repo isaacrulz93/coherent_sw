@@ -4,7 +4,7 @@
   "autocast": false,
   "branch": "exp/lognormal-spectral-spdhsw-v1",
   "command_python": "/home/pikachu/miniconda3/envs/spdsw_hsw/bin/python",
-  "commit_at_invocation": "39bc01f2aec9e9cd1b5d145319c53d601cc9fd86",
+  "commit_at_invocation": "dfc7645eee08ef714a0589ec638ad4ca6f18b30c",
   "cwd": "/home/pikachu/coherent_sw",
   "device": {
     "compute_processes_before_cuda_initialization": [],

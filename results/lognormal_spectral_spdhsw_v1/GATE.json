@@ -1,6 +1,15 @@
 {
-  "decision": "proceed_to_hgd_development",
-  "development": null,
+  "decision": "stop_after_development_null",
+  "development": {
+    "decision": "stop_after_development_null",
+    "execution_errors": 0,
+    "pass": false,
+    "selected_divergence_count": 0,
+    "selected_improved_subjects": 0,
+    "selected_mean_paired_auc_difference": 0.0035460763925199514,
+    "selected_method": "lns_spdhsw_k40_l500_s0p5",
+    "selected_sigma": 0.5
+  },
   "heldout": null,
   "proceed_to_full_expansion": false,
   "synthetic": {

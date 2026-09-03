@@ -166,6 +166,8 @@ def check_gpu3() -> dict[str, object]:
     query = subprocess.run(
         [
             "nvidia-smi",
+            "-i",
+            str(PHYSICAL_GPU),
             "--query-compute-apps=gpu_uuid,pid,process_name,used_memory",
             "--format=csv,noheader,nounits",
         ],
@@ -955,6 +957,276 @@ def development_phase(rerun: bool = False) -> dict:
     return gate
 
 
+def _development_interaction(summary: pd.DataFrame) -> pd.DataFrame:
+    """Development-only hierarchy-versus-direct diagnostic by subject/sigma."""
+    hierarchy_zero = summary[summary.method == hierarchy_method(0.0).name][
+        ["subject", "relative_lew_auc"]
+    ].rename(columns={"relative_lew_auc": "hierarchy_uniform_auc"})
+    direct_zero = summary[summary.method == direct_method(K, 0.0).name][
+        ["subject", "relative_lew_auc"]
+    ].rename(columns={"relative_lew_auc": "direct_uniform_auc"})
+    rows: list[pd.DataFrame] = []
+    for sigma in NONZERO_SIGMAS:
+        hierarchy = summary[summary.method == hierarchy_method(sigma).name][
+            ["subject", "relative_lew_auc"]
+        ].rename(columns={"relative_lew_auc": "hierarchy_spectral_auc"})
+        direct = summary[summary.method == direct_method(K, sigma).name][
+            ["subject", "relative_lew_auc"]
+        ].rename(columns={"relative_lew_auc": "direct_spectral_auc"})
+        block = hierarchy.merge(hierarchy_zero, on="subject").merge(direct, on="subject").merge(
+            direct_zero, on="subject"
+        )
+        block.insert(0, "sigma", sigma)
+        block["hierarchy_paired_difference"] = (
+            block.hierarchy_spectral_auc - block.hierarchy_uniform_auc
+        )
+        block["direct_paired_difference"] = block.direct_spectral_auc - block.direct_uniform_auc
+        block["interaction"] = block.hierarchy_paired_difference - block.direct_paired_difference
+        rows.append(block)
+    return pd.concat(rows, ignore_index=True)
+
+
+def _plot_mean_curves(
+    frame: pd.DataFrame,
+    *,
+    x: str,
+    y: str,
+    output: Path,
+    xlabel: str,
+    ylabel: str,
+    title: str,
+) -> None:
+    selected = [
+        hierarchy_method(0.0).name,
+        hierarchy_method(0.5).name,
+        direct_method(K, 0.0).name,
+        direct_method(K, 0.5).name,
+        direct_method(500, 0.0).name,
+    ]
+    labels = {
+        hierarchy_method(0.0).name: "normalized SPDHSW (s=0)",
+        hierarchy_method(0.5).name: "spectral SPDHSW (s=0.5)",
+        direct_method(K, 0.0).name: "SPDSW L=40",
+        direct_method(K, 0.5).name: "direct spectral L=40 (s=0.5)",
+        direct_method(500, 0.0).name: "SPDSW L=500",
+    }
+    fig, axis = plt.subplots(figsize=(8.2, 5.0))
+    for method in selected:
+        block = frame[(frame.method == method) & np.isfinite(frame[y])].copy()
+        if block.empty:
+            continue
+        if y == "lew":
+            initial = block[block.epoch == 0][["subject", "seed", "lew"]].rename(
+                columns={"lew": "initial_lew"}
+            )
+            block = block.merge(initial, on=["subject", "seed"])
+            block["plot_value"] = block.lew / block.initial_lew
+        else:
+            block["plot_value"] = block[y]
+        grouped = block.groupby("epoch", as_index=False).agg(
+            x_value=(x, "mean"), mean=("plot_value", "mean"), minimum=("plot_value", "min"), maximum=("plot_value", "max")
+        )
+        axis.plot(grouped.x_value, grouped["mean"], label=labels[method], linewidth=2)
+        axis.fill_between(grouped.x_value, grouped.minimum, grouped.maximum, alpha=0.10)
+    axis.set(xlabel=xlabel, ylabel=ylabel, title=title)
+    axis.grid(alpha=0.25)
+    axis.legend(fontsize=8)
+    fig.tight_layout()
+    fig.savefig(output, dpi=180)
+    plt.close(fig)
+
+
+def _write_development_figures(frame: pd.DataFrame, summary: pd.DataFrame, interaction: pd.DataFrame) -> None:
+    evaluated = frame[np.isfinite(frame.lew)].copy()
+    _plot_mean_curves(
+        evaluated,
+        x="epoch",
+        y="lew",
+        output=OUT / "fig_lew_vs_epoch.png",
+        xlabel="epoch",
+        ylabel="mean relative exact LEW",
+        title="HGD development (normalized update; mean and subject range)",
+    )
+    _plot_mean_curves(
+        evaluated,
+        x="optimization_seconds_cum",
+        y="lew",
+        output=OUT / "fig_lew_vs_wallclock.png",
+        xlabel="optimization-loop seconds (LEW evaluation excluded)",
+        ylabel="mean relative exact LEW",
+        title="HGD development: LEW versus optimization wall-clock",
+    )
+    _plot_mean_curves(
+        evaluated,
+        x="cumulative_ambient_projections",
+        y="lew",
+        output=OUT / "fig_lew_vs_ambient_projections.png",
+        xlabel="cumulative expensive ambient projections",
+        ylabel="mean relative exact LEW",
+        title="HGD development: LEW versus ambient projection count",
+    )
+
+    diagnostic = interaction.groupby("sigma", as_index=False).agg(
+        mean_interaction=("interaction", "mean"),
+        minimum=("interaction", "min"),
+        maximum=("interaction", "max"),
+    )
+    fig, axis = plt.subplots(figsize=(7.0, 4.5))
+    error = np.vstack(
+        [diagnostic.mean_interaction - diagnostic.minimum, diagnostic.maximum - diagnostic.mean_interaction]
+    )
+    axis.bar(diagnostic.sigma.astype(str), diagnostic.mean_interaction, color="#577590", yerr=error, capsize=4)
+    axis.axhline(0.0, color="black", linewidth=1)
+    axis.set(
+        xlabel="sigma",
+        ylabel="development AUC interaction",
+        title="Development diagnostic only (held-out interaction not run)",
+    )
+    axis.grid(axis="y", alpha=0.25)
+    fig.tight_layout()
+    fig.savefig(OUT / "fig_interaction.png", dpi=180)
+    plt.close(fig)
+
+    selected = [hierarchy_method(0.0).name, hierarchy_method(0.5).name, direct_method(K, 0.0).name]
+    labels = {
+        hierarchy_method(0.0).name: "normalized SPDHSW",
+        hierarchy_method(0.5).name: "spectral SPDHSW s=0.5",
+        direct_method(K, 0.0).name: "SPDSW L=40",
+    }
+    fig, axes = plt.subplots(1, 2, figsize=(11.0, 4.2))
+    positive_epochs = frame[frame.epoch > 0]
+    for method in selected:
+        block = positive_epochs[positive_epochs.method == method]
+        grouped = block.groupby("epoch", as_index=False).agg(
+            gradient=("gradient_norm", "mean"), update=("update_norm", "mean")
+        )
+        axes[0].plot(grouped.epoch, grouped.gradient, label=labels[method])
+        axes[1].plot(grouped.epoch, grouped["update"], label=labels[method])
+    axes[0].set(xlabel="epoch", ylabel="mean Frobenius norm", title="Gradient norm")
+    axes[1].set(xlabel="epoch", ylabel="mean Frobenius norm", title="Update norm")
+    for axis in axes:
+        axis.grid(alpha=0.25)
+        axis.legend(fontsize=8)
+    fig.suptitle("HGD development stability under normalized updates")
+    fig.tight_layout()
+    fig.savefig(OUT / "fig_gradient_update_stability.png", dpi=180)
+    plt.close(fig)
+
+    spectrum = summary.groupby(["hierarchical", "sigma", "L"], as_index=False).agg(
+        ess=("median_ess", "mean"), entropy=("median_entropy", "mean")
+    )
+    spectrum["relative_ess"] = spectrum.ess / spectrum.L
+    spectrum["relative_entropy"] = spectrum.entropy / np.log(spectrum.L)
+    fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.2))
+    for hierarchical, label in [(False, "direct L=40"), (True, "hierarchy L=500")]:
+        expected_l = L_HIER if hierarchical else K
+        block = spectrum[
+            (spectrum.hierarchical == hierarchical)
+            & (spectrum.L == expected_l)
+            & (spectrum.sigma.isin(SIGMAS))
+        ].sort_values("sigma")
+        axes[0].plot(block.sigma, block.relative_ess, marker="o", label=label)
+        axes[1].plot(block.sigma, block.relative_entropy, marker="o", label=label)
+    axes[0].set(xlabel="sigma", ylabel="ESS / L", title="Relative effective sample size")
+    axes[1].set(xlabel="sigma", ylabel="entropy / log(L)", title="Relative entropy")
+    for axis in axes:
+        axis.grid(alpha=0.25)
+        axis.legend(fontsize=8)
+    fig.tight_layout()
+    fig.savefig(OUT / "fig_ess_entropy.png", dpi=180)
+    plt.close(fig)
+
+
+def finalize_development_null() -> dict:
+    """Package the preregistered development null without launching later phases."""
+    phase_out = OUT / "development"
+    development_gate = json.loads((phase_out / "GATE.json").read_text())
+    synthetic_gate = json.loads((OUT / "synthetic" / "GATE.json").read_text())
+    if development_gate.get("pass"):
+        raise RuntimeError("development gate passed; null finalizer is not applicable")
+    frame = load_run_frames(phase_out / "runs")
+    summary = pd.read_csv(phase_out / "RUN_SUMMARY.csv")
+    interaction = _development_interaction(summary)
+    interaction.to_csv(phase_out / "INTERACTION_DIAGNOSTIC.csv", index=False)
+
+    aggregate = summary.groupby(
+        ["phase", "control", "method", "family", "hierarchical", "sigma", "L"], as_index=False
+    ).agg(
+        subjects=("subject", "nunique"),
+        mean_relative_lew_auc=("relative_lew_auc", "mean"),
+        std_relative_lew_auc=("relative_lew_auc", "std"),
+        mean_final_lew=("lew_final", "mean"),
+        mean_gap_closure_100=("gap_closure_100", "mean"),
+        divergence_count=("diverged", "sum"),
+        nan_count=("nan_count", "sum"),
+        mean_optimization_seconds=("optimization_seconds", "mean"),
+        mean_aggregation_seconds=("aggregation_seconds", "mean"),
+        median_ess=("median_ess", "median"),
+        median_entropy=("median_entropy", "median"),
+    )
+    aggregate["aggregation_overhead_pct"] = (
+        100.0 * aggregate.mean_aggregation_seconds / aggregate.mean_optimization_seconds
+    )
+    aggregate["selected_development_candidate"] = aggregate.method == development_gate["selected_method"]
+    aggregate["interpretation"] = "development-only; held-out Phase C prohibited by failed gate"
+    aggregate.to_csv(OUT / "CORE_RESULTS.csv", index=False)
+
+    seed_columns = ["bank_seed", "mix_seed"]
+    seed_range = frame.groupby(["subject", "seed", "epoch", "hierarchical"])[seed_columns].agg(
+        lambda values: int(values.dropna().nunique())
+    )
+    h_columns = ["mean_h", "std_h", "max_h", "min_h"]
+    initial = frame[frame.epoch == 1]
+    initial_ranges: dict[str, float] = {}
+    for hierarchical, label in [(False, "direct"), (True, "hierarchical")]:
+        block = initial[
+            (initial.hierarchical == hierarchical)
+            & (initial.L == (L_HIER if hierarchical else K))
+        ]
+        for column in h_columns:
+            ranges = block.groupby(["subject", "seed"])[column].agg(lambda values: float(values.max() - values.min()))
+            initial_ranges[f"{label}_{column}_max_range"] = float(ranges.max())
+    eval_epochs = sorted(int(value) for value in frame.loc[np.isfinite(frame.lew), "epoch"].unique())
+    validation = {
+        "run_csv_count": int(summary.shape[0]),
+        "expected_run_csv_count": len(DEV_SUBJECTS) * len(development_methods()),
+        "rows_per_run_values": sorted(int(value) for value in frame.groupby(["method", "subject", "seed"]).size().unique()),
+        "expected_rows_per_run": DEV_EPOCHS + 1,
+        "evaluation_epochs": eval_epochs,
+        "expected_evaluation_epochs": list(range(0, DEV_EPOCHS + 1, LEW_EVERY)),
+        "divergence_count": int(summary.diverged.sum()),
+        "nan_count": int(summary.nan_count.sum()),
+        "bank_seed_unique_count_max_within_epoch_group": int(seed_range.bank_seed.max()),
+        "mix_seed_unique_count_max_within_hierarchical_epoch_group": int(
+            seed_range.reset_index().query("hierarchical == True").mix_seed.max()
+        ),
+        "initial_directional_field_ranges": initial_ranges,
+        "heldout_phase_run": False,
+        "validation_pass": bool(
+            summary.shape[0] == len(DEV_SUBJECTS) * len(development_methods())
+            and (frame.groupby(["method", "subject", "seed"]).size() == DEV_EPOCHS + 1).all()
+            and eval_epochs == list(range(0, DEV_EPOCHS + 1, LEW_EVERY))
+            and int(summary.diverged.sum()) == 0
+            and int(summary.nan_count.sum()) == 0
+            and int(seed_range.bank_seed.max()) == 1
+            and int(seed_range.reset_index().query("hierarchical == True").mix_seed.max()) == 1
+        ),
+    }
+    dump_json(phase_out / "COMMON_RANDOM_NUMBERS_AUDIT.json", validation)
+    _write_development_figures(frame, summary, interaction)
+
+    root_runs = OUT / "runs"
+    root_runs.mkdir(exist_ok=True)
+    (root_runs / "NOT_RUN.md").write_text(
+        "# Held-out runs: not run\n\n"
+        "Phase C was prohibited because the preregistered Phase B development gate failed. "
+        "No subjects 1, 7, or 14, Phase D baselines, or BNCI transfer runs were launched.\n"
+    )
+    update_global_outputs(synthetic_gate=synthetic_gate, development_gate=development_gate)
+    verify_frozen()
+    return validation
+
+
 def write_claim_ledger() -> None:
     text = """# Claim ledger
 
@@ -977,9 +1249,14 @@ def write_claim_ledger() -> None:
 
 ## Empirical findings
 
-- Synthetic and HGD findings are descriptive for the registered dimensions,
-  subjects, seeds, candidate counts, sigma grid, and optimization controls.
-- A gate failure is retained as a null result and stops later expansion.
+- The registered synthetic interaction gate passed in m=253, 2016, and 8256.
+- In HGD development subjects 2, 3, and 4, every registered nonzero sigma had
+  worse mean normalized-update relative LEW AUC than uniform normalized
+  SPDHSW. The selected sigma 0.5 differed by +0.00354608 (lower is better)
+  and improved 0 of 3 subjects.
+- The failed development gate stopped held-out HGD, raw-SGD controls, matched
+  concentration baselines, and BNCI transfer. No inference about those unrun
+  phases is made.
 
 ## Unsupported or prohibited claims
 
@@ -1067,10 +1344,99 @@ def update_global_outputs(
         lines.append(
             f"- Development gate: {'PASS' if development_gate['pass'] else 'FAIL'}; "
             f"selected sigma={development_gate['selected_sigma']}, "
-            f"improved subjects={development_gate['selected_improved_subjects']}/3."
+            f"improved subjects={development_gate['selected_improved_subjects']}/3; "
+            f"mean paired relative-LEW AUC difference={development_gate['selected_mean_paired_auc_difference']:+.8f} "
+            "(lower is better)."
         )
     else:
         lines.append("- HGD development: NOT RUN.")
+    if development_gate and not development_gate["pass"]:
+        selection = pd.read_csv(OUT / "development" / "SELECTION.csv")
+        selection_table = selection[
+            [
+                "sigma",
+                "mean_relative_lew_auc",
+                "mean_uniform_hierarchy_auc",
+                "mean_paired_auc_difference",
+                "improved_subjects",
+                "divergence_count",
+                "selected",
+            ]
+        ]
+        summary = pd.read_csv(OUT / "development" / "RUN_SUMMARY.csv")
+        selected_summary = summary[
+            summary.method.isin(
+                [
+                    hierarchy_method(0.0).name,
+                    hierarchy_method(float(development_gate["selected_sigma"])).name,
+                    direct_method(K, 0.0).name,
+                    direct_method(K, float(development_gate["selected_sigma"])).name,
+                    direct_method(500, 0.0).name,
+                ]
+            )
+        ][["method", "subject", "lew_initial", "lew_final", "relative_lew_auc", "gap_closure_100"]]
+        step_target = json.loads((OUT / "development" / "NORMALIZED_STEP_TARGET.json").read_text())[
+            "normalized_step_target"
+        ]
+        validation_path = OUT / "development" / "COMMON_RANDOM_NUMBERS_AUDIT.json"
+        validation = json.loads(validation_path.read_text()) if validation_path.exists() else {}
+        lines.extend(
+            [
+                "",
+                "## Development gate result",
+                "",
+                "The mechanism did not survive the registered HGD development selection. Every nonzero sigma was worse "
+                "than sigma=0 in mean relative exact-LEW AUC, and none improved 2 of 3 development subjects. "
+                "Consequently Phase C held-out HGD, the raw-SGD control, Phase D matched-concentration baselines, "
+                "BNCI transfer, and full expansion were not run.",
+                "",
+                f"The common normalized step target was `{step_target:.12g}`, derived exactly as preregistered from "
+                "the median initial normalized-SPDHSW update norm at raw LR 10000.",
+                "",
+                frame_markdown(selection_table),
+                "",
+                "Per-subject outcomes for the selected development comparison and references:",
+                "",
+                frame_markdown(selected_summary.sort_values(["method", "subject"])),
+                "",
+                "## Run integrity",
+                "",
+                f"- Development run CSVs: {validation.get('run_csv_count', 'pending')}/"
+                f"{validation.get('expected_run_csv_count', 'pending')}; rows per run: "
+                f"{validation.get('rows_per_run_values', 'pending')}.",
+                f"- Exact LEW epochs: {validation.get('evaluation_epochs', 'pending')}.",
+                f"- Divergences: {validation.get('divergence_count', 'pending')}; NaN rows: "
+                f"{validation.get('nan_count', 'pending')}.",
+                "- Fresh deterministic epoch seeds were shared across methods; the CRN audit is in "
+                "`development/COMMON_RANDOM_NUMBERS_AUDIT.json`.",
+                "- All run CSVs, including negative outcomes, are retained. No clipping, early stopping, "
+                "preprocessing change, or post-hoc sigma expansion was used.",
+            ]
+        )
+    lines.extend(
+        [
+            "",
+            "## Failures and negative results",
+            "",
+            "- The first synthetic invocation stopped before producing scientific draw records because CUDA "
+            "`ndtri` required an unavailable NVRTC builtins library. The failure log is retained as "
+            "`logs/synthetic_attempt1.log`. The deterministic spectrum construction was moved to float64 CPU "
+            "and copied to physical GPU 3; a GPU smoke regression was then added and all 63 tests passed.",
+            "- The synthetic mechanism gate passed, but this did not predict an HGD optimization gain. The HGD "
+            "development gate failed cleanly with no divergence or nonfinite values.",
+            "- Because the registered gate failed, no held-out or transfer result exists; `runs/NOT_RUN.md` records "
+            "that deliberate stop.",
+            "",
+            "## Figures and tables",
+            "",
+            "- `fig_spectrum_weights.png` and `fig_synthetic_capture.png` summarize Phase A.",
+            "- `fig_lew_vs_epoch.png`, `fig_lew_vs_wallclock.png`, and "
+            "`fig_lew_vs_ambient_projections.png` show development-only trajectories.",
+            "- `fig_interaction.png` is explicitly a development diagnostic, not the unrun held-out primary statistic.",
+            "- `fig_gradient_update_stability.png` and `fig_ess_entropy.png` show optimization and concentration controls.",
+            "- `CORE_RESULTS.csv` is development-only because the held-out gate was never reached.",
+        ]
+    )
     lines.extend(
         [
             "",
@@ -1081,11 +1447,15 @@ def update_global_outputs(
             "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=. /home/pikachu/miniconda3/envs/spdsw_hsw/bin/python -m pytest -q --junitxml=results/lognormal_spectral_spdhsw_v1/TEST_RESULTS.xml",
             "PYTHONPATH=. /home/pikachu/miniconda3/envs/spdsw_hsw/bin/python -u -m experiments.run_logspectral_spdhsw --phase synthetic",
             "PYTHONPATH=. /home/pikachu/miniconda3/envs/spdsw_hsw/bin/python -u -m experiments.run_logspectral_spdhsw --phase development",
+            "PYTHONPATH=. /home/pikachu/miniconda3/envs/spdsw_hsw/bin/python -u -m experiments.run_logspectral_spdhsw --phase finalize",
             "```",
             "",
             f"- Python {platform.python_version()}, PyTorch {torch.__version__}, CUDA runtime {torch.version.cuda}.",
             f"- Host: {platform.node()}; branch: exp/lognormal-spectral-spdhsw-v1.",
-            f"- Audit/tests checkpoint: 39bc01f; runner invocation parent commit: {subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=PROJECT, text=True).strip()}.",
+            f"- Starting direct-pilot commit: 4edf5dda470c5e525c5feb274462414751348b4b; "
+            "audit/tests checkpoint: 39bc01f2aec9e9cd1b5d145319c53d601cc9fd86; "
+            "synthetic checkpoint: dfc7645eee08ef714a0589ec638ad4ca6f18b30c.",
+            f"- Finalization parent commit: {subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=PROJECT, text=True).strip()}.",
             "- Device: physical GPU 3, NVIDIA RTX 6000 Ada Generation.",
             "",
             "## Scope and claims",
@@ -1122,12 +1492,19 @@ def write_environment(device_info: dict[str, object]) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--phase", choices=("synthetic", "development"), required=True)
+    parser.add_argument("--phase", choices=("synthetic", "development", "finalize"), required=True)
     parser.add_argument("--rerun", action="store_true")
     args = parser.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     verify_frozen()
     configure_numerics()
+    if args.phase == "finalize":
+        validation = finalize_development_null()
+        print(
+            f"[FINALIZE] stop_after_development_null validation_pass={validation['validation_pass']}",
+            flush=True,
+        )
+        return 0
     device_info = check_gpu3()
     write_environment(device_info)
     if args.phase == "synthetic":

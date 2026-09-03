@@ -1,0 +1,5 @@
+method,sigma,mean_relative_lew_auc,mean_uniform_hierarchy_auc,mean_paired_auc_difference,improved_subjects,divergence_count,nan_count,eligible_no_divergence,selected
+lns_spdhsw_k40_l500_s0p5,0.5,0.9662572326297476,0.9627111562372277,0.0035460763925199514,0,0,0,True,True
+lns_spdhsw_k40_l500_s1,1.0,0.9696320296658256,0.9627111562372277,0.006920873428597929,0,0,0,True,False
+lns_spdhsw_k40_l500_s1p25,1.25,0.9713761359312595,0.9627111562372277,0.008664979694031794,0,0,0,True,False
+lns_spdhsw_k40_l500_s1p5,1.5,0.9732418424327086,0.9627111562372277,0.01053068619548081,0,0,0,True,False

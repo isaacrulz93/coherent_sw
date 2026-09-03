@@ -10,7 +10,7 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=. \
   --junitxml=results/lognormal_spectral_spdhsw_v1/TEST_RESULTS.xml
 ```
 
-Final pre-experiment result: `63 passed` in 3.51 seconds. The suite ran on CPU
+Final post-gate verification result: `63 passed` in 3.22 seconds. The suite ran on CPU
 except for the explicit fixed-weight smoke test on physical GPU 3. The warnings are 73 upstream
 TorchScript deprecations from imported dependencies and three pre-existing
 pytest xUnit property-format warnings; there was no failed, skipped, or xfailed

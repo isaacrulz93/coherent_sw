@@ -1,0 +1,6 @@
+{
+  "all_candidates_file": "SELECTION.csv",
+  "selected_method": "lns_spdhsw_k40_l500_s0p5",
+  "selected_sigma": 0.5,
+  "selection_rule": "no divergence, lowest mean relative LEW AUC, smaller-sigma tie break"
+}
