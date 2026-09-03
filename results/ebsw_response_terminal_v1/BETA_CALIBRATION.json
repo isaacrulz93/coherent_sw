@@ -1,0 +1,93 @@
+{
+  "beta_scale": 122.7769233819667,
+  "calibrated_before_comparative_training": true,
+  "configuration_file_sha256": "b90548bd3ad1487d56efa99bbdd6c5b5f176e6994b4d7c1e69881d3e99bdce3d",
+  "configuration_hash": "3bcd2b74980845d59ecfb85f85a374e9a88a33fdb9b188ef87184cba87df8c85",
+  "hbar": 0.008144853059144815,
+  "interpretation": "scale calibration diagnostic, not an optimal beta",
+  "rho_match": 0.37648147522096403,
+  "source_values": [
+    {
+      "N_proj": 500,
+      "bank_hash": "2b1b45e4e4a812f6d748c2c175962332f0dbca2acd50b6a4d146c963428b0e9a",
+      "bank_seed": 6398,
+      "h_hash": "4d1b3e0081f992322824a5ff3f17106f535ba9339d11283959a8a5820160099f",
+      "mean_h": 0.0045735860696544456,
+      "seed": 6398,
+      "subject": 1
+    },
+    {
+      "N_proj": 500,
+      "bank_hash": "dc1dc33adacb85b74a84909665c762b38e02c737337f33c7525bf5fa36362acd",
+      "bank_seed": 3654,
+      "h_hash": "095a85a4260267e2a8f6e6cfe3e65e090eaeec2f3a868a411e01983a612ff78c",
+      "mean_h": 0.004658350859483935,
+      "seed": 3654,
+      "subject": 1
+    },
+    {
+      "N_proj": 500,
+      "bank_hash": "bd0f24e7dfc9db479257333acb1d1d140ca657db3c0a83593d373857e0f00737",
+      "bank_seed": 1788,
+      "h_hash": "8b31c5b8296f0ada881b4d914142c5ffe1911990dafa14756825ef9cdfaac6db",
+      "mean_h": 0.004693229501149986,
+      "seed": 1788,
+      "subject": 1
+    },
+    {
+      "N_proj": 500,
+      "bank_hash": "2b1b45e4e4a812f6d748c2c175962332f0dbca2acd50b6a4d146c963428b0e9a",
+      "bank_seed": 6398,
+      "h_hash": "7f397736e6236fae8fae5d2f608772acd27aa3f4bc00831fe46c6502ad20380a",
+      "mean_h": 0.009585455706095446,
+      "seed": 6398,
+      "subject": 3
+    },
+    {
+      "N_proj": 500,
+      "bank_hash": "dc1dc33adacb85b74a84909665c762b38e02c737337f33c7525bf5fa36362acd",
+      "bank_seed": 3654,
+      "h_hash": "fd8023dcd57243ec156e3fd20798103630e9e3f7884d1ef5c8e8ad12632121fc",
+      "mean_h": 0.009076281059170797,
+      "seed": 3654,
+      "subject": 3
+    },
+    {
+      "N_proj": 500,
+      "bank_hash": "bd0f24e7dfc9db479257333acb1d1d140ca657db3c0a83593d373857e0f00737",
+      "bank_seed": 1788,
+      "h_hash": "fd2a0e52e30a1c57fc23347a81ca78e7a07c2e50d9a9ebd63214289233afe634",
+      "mean_h": 0.008961731652377552,
+      "seed": 1788,
+      "subject": 3
+    },
+    {
+      "N_proj": 500,
+      "bank_hash": "2b1b45e4e4a812f6d748c2c175962332f0dbca2acd50b6a4d146c963428b0e9a",
+      "bank_seed": 6398,
+      "h_hash": "4aa7ff1514751c779014575db386380b85065d507a070c6b109e306a3bfdfbbe",
+      "mean_h": 0.011082502765155301,
+      "seed": 6398,
+      "subject": 8
+    },
+    {
+      "N_proj": 500,
+      "bank_hash": "dc1dc33adacb85b74a84909665c762b38e02c737337f33c7525bf5fa36362acd",
+      "bank_seed": 3654,
+      "h_hash": "111862f03209f36c0cad8bcd1ac8e5eec287bb49b4aa609429b21e3b08e6acd0",
+      "mean_h": 0.010501637579295746,
+      "seed": 3654,
+      "subject": 8
+    },
+    {
+      "N_proj": 500,
+      "bank_hash": "bd0f24e7dfc9db479257333acb1d1d140ca657db3c0a83593d373857e0f00737",
+      "bank_seed": 1788,
+      "h_hash": "55d1fed11884067772cdad9af5337acb2a285f66b4da1be52b8cda078bfb17cb",
+      "mean_h": 0.010170902339920108,
+      "seed": 1788,
+      "subject": 8
+    }
+  ],
+  "spectral_ess": 188.24073761048203
+}

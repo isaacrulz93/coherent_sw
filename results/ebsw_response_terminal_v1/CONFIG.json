@@ -1,0 +1,135 @@
+{
+  "N_proj": 500,
+  "branch": "exp/ebsw-response-terminal-v1",
+  "created_before_scientific_runs": true,
+  "dataset": "BNCI2014_001",
+  "diagnostic_cost_excluded_from_optimization_wall_clock": true,
+  "diagnostic_epochs": [
+    0,
+    25,
+    50,
+    100,
+    200,
+    300,
+    400,
+    500
+  ],
+  "early_stopping": false,
+  "epochs": 500,
+  "ess_solver": {
+    "beta_calibration_gradient": "stopped; beta is a Python float solved from h.detach()",
+    "bracket": "range-scaled initial high then deterministic doubling",
+    "constant_atol": 0.0,
+    "constant_rtol": 1e-14,
+    "dtype": "float64",
+    "lower_bound": 0.0,
+    "max_bracket_steps": 1024,
+    "max_iterations": 120,
+    "rho_tolerance": 1e-10
+  },
+  "ess_targets": [
+    0.25,
+    0.5,
+    0.75
+  ],
+  "eta_norm": 2.793683898093503,
+  "eta_root": 589.107249530589,
+  "euclidean_context": {
+    "dimension": 2,
+    "epochs": 100,
+    "eval_L": 5000,
+    "eval_every": 10,
+    "samples": 32,
+    "seeds": [
+      6398,
+      3654,
+      1788
+    ],
+    "source": "frozen experiments/run_euclidean.py E5",
+    "terminal_gate": false,
+    "train_L": 100,
+    "update": "frozen normalized common-step protocol"
+  },
+  "evaluation_epochs": [
+    0,
+    25,
+    50,
+    75,
+    100,
+    125,
+    150,
+    175,
+    200,
+    225,
+    250,
+    275,
+    300,
+    325,
+    350,
+    375,
+    400,
+    425,
+    450,
+    475,
+    500
+  ],
+  "fixed_beta": [
+    1.0,
+    "1/hbar"
+  ],
+  "gate_definitions": {
+    "material_instability": "method divergence count exceeds paired baseline by >1 or is >=5/9",
+    "one_step_subject_seed_summary": "mean(delta_LEW_full-delta_LEW_stop_normmatched) over the eight diagnostic states from each normalized FULL trajectory; negative favors FULL",
+    "spectral_beats_sw": "favorable grand mean AUC and >=7/9 paired runs"
+  },
+  "hierarchy": false,
+  "independent_lew": true,
+  "lpwp_description": "L^(p*q)-aggregation of the directional W_p field",
+  "lpwp_q": [
+    2,
+    4
+  ],
+  "method_count": 16,
+  "method_names": [
+    "sw",
+    "ebsw_full_b1",
+    "ebsw_stop_b1",
+    "ebsw_full_bscale",
+    "ebsw_stop_bscale",
+    "ebsw_full_ess025",
+    "ebsw_stop_ess025",
+    "ebsw_full_ess050",
+    "ebsw_stop_ess050",
+    "ebsw_full_ess075",
+    "ebsw_stop_ess075",
+    "ebsw_full_essmatch",
+    "ebsw_stop_essmatch",
+    "spectral_s1",
+    "lpwp_q2",
+    "lpwp_q4"
+  ],
+  "p": 2,
+  "raw_power_scientific_rerun": false,
+  "rho_match": 0.37648147522096403,
+  "rho_match_source": "exact sigma-1 lognormal spectral weights at N_proj=500",
+  "root_epsilon": 0.0,
+  "sampling": "resampled_every_epoch_only",
+  "seeds": [
+    6398,
+    3654,
+    1788
+  ],
+  "spectral_sigma": 1.0,
+  "subjects": [
+    1,
+    3,
+    8
+  ],
+  "terminal_audit": true,
+  "trajectory_count": 288,
+  "update_formulations": [
+    "normalized",
+    "raw_rooted"
+  ],
+  "version": "ebsw_response_terminal_v1"
+}

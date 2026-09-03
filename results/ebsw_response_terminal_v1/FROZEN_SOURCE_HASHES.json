@@ -1,0 +1,38 @@
+{
+  "cache_sha256": {
+    "/home/pikachu/EBSPDSW/results/pilot_hgd/data_cache/BNCI2014_001/subject_01_logs.pt": "a6e2edb732c9f09f12ba094fcfbfd5a6cc7608fbe280a82956e7f7b28b5521bb",
+    "/home/pikachu/EBSPDSW/results/pilot_hgd/data_cache/BNCI2014_001/subject_03_logs.pt": "f913863f3da0902093665fba446da4b61e74dbd155eb5a2f53fa8851b9eabd39",
+    "/home/pikachu/EBSPDSW/results/pilot_hgd/data_cache/BNCI2014_001/subject_08_logs.pt": "cd8a839a423b8d1be231cd482c70cbf022bc8b3e13bfcab3414bc5a871ad001f"
+  },
+  "frozen_branch_heads": {
+    "exp/fixed-vs-resampled-spectral-spdsw-v1": "ec4a68af6107b3522d5e841dd35f708402a6378b",
+    "exp/high-support-fixed-vs-resampled-spdsw-v2": "b9f61cc6824e2fc71e925ceb960c241bdaf5dbec",
+    "exp/lognormal-spectral-spdhsw-v1": "b0e5b47e17d45a94f39b2b5ba08fa965a5d3a77c",
+    "exp/spectral-raw-optimization-audit-v1": "b9f61cc6824e2fc71e925ceb960c241bdaf5dbec",
+    "exp/spectral-sampling-update-factorial-v1": "6249fcc883de585b16b1498532a154e8ca468e0c",
+    "exp/spectral-update-formulation-audit-v1": "b9f61cc6824e2fc71e925ceb960c241bdaf5dbec",
+    "main": "4edf5dda470c5e525c5feb274462414751348b4b"
+  },
+  "frozen_untracked_sha256": {
+    "experiments/run_spectral_raw_optimization_audit.py": "f06c9990f6253c019f1dd5112e514e21c0c1f6cfd4d62fdfd0d7d4349b373686"
+  },
+  "prior_result_tree_sha256": {
+    "results/coherent_sw/euclidean_v1": "73b366fab00db2badf6f3135039cbc51fb60b01b855ddebbe25c92c66a04ed4f",
+    "results/coherent_sw_overnight": "7d840778efb9f95d6a255961d234a65ce8af55077fa96fa27d8358ce5dd47f48",
+    "results/fixed_vs_resampled_spectral_spdsw_v1": "9eaadb1b5b6136cd418065db22e06cd90387d21ed8529f72ff9a2fbc40e8e451",
+    "results/high_support_fixed_vs_resampled_spdsw_v2": "64cc8922267042f98ec4f5ba10344e341a83ffacac6abf4dac45457daa7bdc7f",
+    "results/lognormal_spectral_spdhsw_v1": "baa0352a347ca49bc522a6e375755791d464220af5769f7f756d49b2129864e9",
+    "results/spectral_sampling_update_factorial_v1": "34b124549cdbb0c86c7b3b44b207bdbc180207893616a78ce0330e0338d73e18"
+  },
+  "source_sha256": {
+    "/home/pikachu/EBSPDSW/evobank/data.py": "17f0e97ac34edd7a71da696e5ae02b5ec4c253852c45547e6cb71ba2b9a2c6dd",
+    "/home/pikachu/EBSPDSW/evobank/lew.py": "4b8b64311b47bc6a438a8fd1e93b9906f2da9f1642a558745aaf580ea12d5a63",
+    "/home/pikachu/EBSPDSW/evobank/ot1d.py": "a5ab21c6f9d0f58cd8aaf2ae0caca077ad035fadbb45a6c87e47ff6a933cb958",
+    "/home/pikachu/EBSPDSW/evobank/svec.py": "98becc334f71404d6ff3aec00f81f4e444f9b84d747edee03584d5bd243175ea",
+    "/home/pikachu/coherent_sw/coherent_slicing/aggregations.py": "fa11e9e303357495ee79ba0c601e6427f87e4872ec89a6a4ceaf73a7fdfd2c8a",
+    "/home/pikachu/coherent_sw/coherent_slicing/ot.py": "309506f3a5920f3c076eb3d3946b8474d27144243a83e7baa4c8c7ab4e9bb5af",
+    "/home/pikachu/coherent_sw/coherent_slicing/spectral.py": "0de169a3b9cef64c2929727a946cd3a6202a7ba39a2ceca09d312db3a985e1ee",
+    "/home/pikachu/coherent_sw/experiments/run_euclidean.py": "40b6a401f614f2bf7a9353d002a5779de97e5133b8136ca67dbd7ac5e7ce7a18",
+    "/home/pikachu/coherent_sw/experiments/run_spectral_sampling_update_factorial.py": "32c5703582af8febf6a7e1d684e792bb70ea6bc7b6ef567d86345888446ae20e"
+  }
+}

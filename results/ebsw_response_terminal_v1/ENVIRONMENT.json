@@ -1,0 +1,27 @@
+{
+  "CUDA_VISIBLE_DEVICES": null,
+  "amp": false,
+  "autocast": false,
+  "branch": "exp/ebsw-response-terminal-v1",
+  "commit_at_calibration": "f108b87956f9557a019c08d6289913a27c2fe669",
+  "cuda_runtime": "13.0",
+  "device": {
+    "compute_processes_before_initialization": [
+      "GPU-8c5c166b-5d2a-5f99-04f7-ba8c9cd57e85, 1245326, python, 5570"
+    ],
+    "cotenant_policy": "recorded and allowed because wall-clock is not a scientific endpoint",
+    "name": "NVIDIA RTX A6000",
+    "physical_gpu": 1,
+    "torch_device": "cuda:2",
+    "total_memory_bytes": 50897289216,
+    "uuid": "8c5c166b-5d2a-5f99-04f7-ba8c9cd57e85"
+  },
+  "dtype": "torch.float64",
+  "hostname": "affctiv",
+  "platform": "Linux-6.8.0-87-generic-x86_64-with-glibc2.35",
+  "python": "3.10.19",
+  "python_executable": "/home/pikachu/miniconda3/envs/spdsw_hsw/bin/python",
+  "tf32_cudnn": false,
+  "tf32_matmul": false,
+  "torch": "2.11.0+cu130"
+}
