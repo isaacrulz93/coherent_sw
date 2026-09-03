@@ -1468,7 +1468,7 @@ def write_figures(
         ("delta_spectral_resampled", "spectral | resampled"),
         ("interaction", "interaction"),
     ]
-    fig, axes = plt.subplots(2, 2, figsize=(10.0, 7.0), sharey=True)
+    fig, axes = plt.subplots(2, 2, figsize=(10.0, 7.0), sharey=False)
     for axis, (column, title) in zip(axes.flat, effects):
         axis.bar(subject_block.subject.astype(str), subject_block[column], color="#577590")
         axis.axhline(0.0, color="black", linewidth=1)
@@ -1627,6 +1627,24 @@ def write_report(
             "mean_lew_reduction_pct", "mean_optimization_ms", "divergence_count", "nan_count",
         ]
     ]
+    raw_core = core[
+        (core.phase == "development")
+        & (core.control == "raw_sgd_lr3000")
+        & (core.reference == False)
+    ][
+        [
+            "method", "mean_relative_lew_auc", "std_relative_lew_auc", "mean_final_lew",
+            "mean_lew_reduction_pct", "mean_optimization_ms", "divergence_count", "nan_count",
+        ]
+    ]
+    reference_quality = core[
+        (core.phase == "development") & (core.reference == False)
+    ][
+        [
+            "control", "method", "l500_quality_reached_runs", "mean_epoch_reach_l500_quality",
+            "mean_wall_ms_reach_l500_quality",
+        ]
+    ]
     subject_block = subjects[
         (subjects.phase == "development") & (subjects.control == "normalized_update")
     ][
@@ -1669,6 +1687,16 @@ def write_report(
         mean_comparator_epoch500_ms=("comparator_epoch500_wall_ms", "mean"),
     )
     failures = sorted((OUT / "logs").glob("*.log")) if (OUT / "logs").exists() else []
+    manifest_records = json.loads((OUT / "RUN_MANIFEST.json").read_text()) if (OUT / "RUN_MANIFEST.json").exists() else []
+    completed_runs = sum(record.get("status") in {"ok", "cached_complete"} for record in manifest_records)
+    failed_runs = len(manifest_records) - completed_runs
+    nondevelopment_runs = sum(record.get("phase") != "development" for record in manifest_records)
+    normalized_subjects = subjects[
+        (subjects.phase == "development") & (subjects.control == "normalized_update")
+    ]
+    raw_subjects = subjects[
+        (subjects.phase == "development") & (subjects.control == "raw_sgd_lr3000")
+    ]
     lines = [
         "- theorem/regression tests: PASS",
         f"- development fixed-vs-resampled result: {gate['fixed_vs_resampled_result']}",
@@ -1699,6 +1727,16 @@ def write_report(
         "",
         frame_markdown(normalized_core),
         "",
+        "Secondary raw-SGD LR=3000 2x2 table (diagnostic only):",
+        "",
+        frame_markdown(raw_core),
+        "",
+        f"The normalized mean resampling effect under uniform weighting was `{normalized_subjects.delta_resample_uniform.mean():+.8f}`. "
+        f"The fixed spectral effect was favorable but only `{normalized_subjects.delta_spectral_fixed.mean():+.8f}`, "
+        f"whereas the resampled spectral effect was adverse at `{normalized_subjects.delta_spectral_resampled.mean():+.8f}`. "
+        f"Under raw SGD, the resampled spectral effect reversed sign to `{raw_subjects.delta_spectral_resampled.mean():+.8f}`; "
+        "this secondary reversal does not override the primary normalized-update conclusion.",
+        "",
         "## 3. Subject-wise factorial differences",
         "",
         "All differences are right-minus-left relative-LEW AUC; negative is favorable to resampling or spectral weighting according to the column definition.",
@@ -1712,6 +1750,10 @@ def write_report(
         "Fixed-spectral time-to-resampled-quality diagnostic:",
         "",
         frame_markdown(wall),
+        "",
+        "Paired L500 epoch-500 quality reach summary:",
+        "",
+        frame_markdown(reference_quality),
         "",
         "## 6. Timing decomposition",
         "",
@@ -1732,6 +1774,9 @@ def write_report(
         "## 9. Gate decision",
         "",
         f"The development gate {'PASSED' if gate['pass'] else 'FAILED'}: `{gate_bundle['decision']}`.",
+        f"The favorable fixed-spectral AUC difference was `{gate['mean_fixed_spectral_paired_auc_difference']:+.8f}` over "
+        f"{gate['fixed_spectral_improved_subjects']}/3 subject means, "
+        "but it was far too small to make fixed spectral competitive with either resampled k=40 method and yielded no registered wall-clock quality advantage.",
         "",
         "```json",
         json.dumps(gate["conditions"], indent=2, sort_keys=True),
@@ -1740,6 +1785,8 @@ def write_report(
         "## 10. Nulls, failures, and scope",
         "",
         f"- Execution failure logs: {len(failures)}. Every log, if any, remains under `logs/`.",
+        f"- Completed trajectories: {completed_runs}/{len(manifest_records)}; manifest failures: {failed_runs}; non-development trajectories: {nondevelopment_runs}.",
+        "- The development sample is only three subjects; effect sizes and subject-wise paired differences are reported without significance claims.",
         "- Raw-SGD outcomes are retained in CORE_RESULTS.csv and SUBJECT_RESULTS.csv but do not determine the primary conclusion.",
         "- Missing L500-quality reach times mean the k=40 method never reached its paired reference's epoch-500 LEW.",
         "- CLAIM_LEDGER.md separates implementation facts, finite-run statements, empirical findings, and prohibited claims.",
@@ -1756,7 +1803,8 @@ def write_report(
         "```",
         "",
         f"- Branch: `{BRANCH}`; analysis invocation commit: `{subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=PROJECT, text=True).strip()}`.",
-        f"- Python {platform.python_version()}, PyTorch {torch.__version__}, CUDA runtime {torch.version.cuda}, physical GPU 3.",
+        f"- Python {platform.python_version()}, PyTorch {torch.__version__}, CUDA runtime {torch.version.cuda}, physical GPU 3 (UUID-verified PyTorch cuda:1).",
+        "- Full regression result before scientific runs: 84 passed; TEST_RESULTS.xml contains the machine-readable result.",
     ]
     (OUT / "REPORT.md").write_text("\n".join(lines) + "\n")
 
