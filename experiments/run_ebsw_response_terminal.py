@@ -1358,6 +1358,7 @@ def gate_results(
             scale_passes.append(condition)
     h_scale = bool(scale_passes)
     magnitude_passes: list[str] = []
+    magnitude_details: dict[str, dict[str, object]] = {}
     sw = summary[(summary["update"] == "raw_rooted") & (summary.method == "sw")]
     for name in ("lpwp_q2", "lpwp_q4"):
         method = summary[(summary["update"] == "raw_rooted") & (summary.method == name)]
@@ -1367,6 +1368,15 @@ def gate_results(
         difference = cell[name] - cell["sw"]
         method_div = int((method.divergence | method["nan"]).sum())
         sw_div = int((sw.divergence | sw["nan"]).sum())
+        magnitude_details[name] = {
+            "favorable_runs": int((difference < 0.0).sum()),
+            "total_runs": int(len(difference)),
+            "paired_AUC_delta": float(difference.mean()),
+            "mean_AUC_method": float(method.relative_LEW_AUC.mean()),
+            "mean_AUC_sw": float(sw.relative_LEW_AUC.mean()),
+            "divergence_method": method_div,
+            "divergence_sw": sw_div,
+        }
         if (
             int((difference < 0.0).sum()) >= 7 and float(difference.mean()) < 0.0
             and method_div < 5 and method_div <= sw_div + 1
@@ -1412,6 +1422,7 @@ def gate_results(
         "H-WR-SCALE_conditions": scale_passes,
         "H-MAG": "PASS" if h_mag else "FAIL",
         "H-MAG_methods": magnitude_passes,
+        "H-MAG_details": magnitude_details,
         "spectral_s1_beats_sw_raw_rooted": spectral_beats_sw,
         "spectral_s1_favorable_runs": int((spectral_difference < 0.0).sum()),
         "spectral_s1_paired_AUC_delta": float(spectral_difference.mean()),
@@ -1567,6 +1578,26 @@ def write_report(
         "TERMINAL DECISION:\nKEEP only the preregistered hypothesis/hypotheses identified below."
     )
     passed = [name for name in ("H-WR-ACTIVE", "H-WR-DIRECTION", "H-WR-COMPLETE", "H-WR-SCALE", "H-MAG") if gate[name] == "PASS"]
+    active_reasons = ", ".join(
+        f"{condition} median response ratio={value:.6g}"
+        for condition, value in gate["response_ratio_median_by_ESS_condition"].items()
+        if value >= 0.10
+    )
+    magnitude_reasons = "; ".join(
+        f"{method}: {details['favorable_runs']}/{details['total_runs']} favorable paired runs, "
+        f"mean AUC {details['mean_AUC_method']:.9g} vs SW {details['mean_AUC_sw']:.9g}, "
+        f"paired delta={details['paired_AUC_delta']:.9g}, divergences "
+        f"{details['divergence_method']} vs SW {details['divergence_sw']}"
+        for method, details in gate["H-MAG_details"].items()
+        if method in gate["H-MAG_methods"]
+    )
+    keep_reasons = (
+        f"H-WR-ACTIVE passed because {active_reasons}. "
+        f"H-MAG passed because {magnitude_reasons}. "
+        "The practical KEEP decision is supported by H-MAG; H-WR-ACTIVE establishes that "
+        "the response mechanism was successfully activated, not that it improved alignment."
+        if gate["TERMINAL_DECISION"] == "KEEP" else ""
+    )
     text = f"""- regression/audit tests: PASS
 - completed BNCI trajectories: {len(summary)}/288
 - divergence trajectories: {divergence}
@@ -1592,6 +1623,8 @@ This terminal experiment used BNCI2014_001 subjects 1, 3, and 8; seeds 6398, 365
 FULL exponential EBSW differentiated `alpha=softmax(beta*h)` and therefore included `alpha_i[1+beta(h_i-F)]`. STOP used the identical alpha values and scalar objective but detached alpha. ESS beta was solved deterministically from `h.detach()` and treated as constant during objective differentiation. This is a conditional full EBSW gradient at calibrated beta, with stop-gradient through the beta calibration map.
 
 The analytic FULL and STOP identities, coefficient sum, ESS endpoints and solver tolerance, exact rho match, q=1 equality with SW, copied-state immutability, common banks/h values, frozen step sizes, independent evaluator, absence of raw-power/hierarchy, and frozen prior hashes passed the full regression suite and runtime audits.
+
+`divergence` uses the existing audited LEW evaluator definition: a trajectory is flagged if any evaluated LEW exceeds its epoch-0 LEW or is nonfinite. Thus a finite, completed trajectory can be counted as divergent even when its run status is `ok`.
 
 ## FULL versus STOP
 
@@ -1641,12 +1674,12 @@ Passed hypotheses: {', '.join(passed) if passed else 'none'}.
 
 Across the preregistered representative value-adaptive families tested, we found no evidence that emphasizing slices according to their directional Wasserstein magnitude improves SPD EEG distribution alignment.
 
-This conclusion is deliberately scoped. It does not invalidate the EBSW triangle-inequality counterexamples, the coherent pair-independent metric construction, the mathematical validity of the spectral metric, or the fixed-bank overfitting findings. It closes only the use of directional Wasserstein magnitude as an informativeness signal to improve SPD/EEG distribution-alignment optimization. It is not a universal impossibility theorem about adaptive slicing, coherent metrics, EBSW, or other possible informativeness definitions.
+This conclusion is deliberately scoped. It does not invalidate the EBSW triangle-inequality counterexamples, the coherent pair-independent metric construction, the mathematical validity of the spectral metric, or the fixed-bank overfitting findings. A CLOSE decision applies only to the use of directional Wasserstein magnitude as an informativeness signal to improve SPD/EEG distribution-alignment optimization; it is not a universal impossibility theorem about adaptive slicing, coherent metrics, EBSW, or other possible informativeness definitions.
 """
     if gate["TERMINAL_DECISION"] == "KEEP":
         text = text.replace(
             "Across the preregistered representative value-adaptive families tested, we found no evidence that emphasizing slices according to their directional Wasserstein magnitude improves SPD EEG distribution alignment.",
-            "The terminal line remains open only because these preregistered hypotheses passed: " + ", ".join(passed) + ".",
+            keep_reasons,
         )
     (OUT / "REPORT.md").write_text(text)
 
