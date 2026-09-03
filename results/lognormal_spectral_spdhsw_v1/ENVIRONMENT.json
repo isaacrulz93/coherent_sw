@@ -1,0 +1,26 @@
+{
+  "CUDA_VISIBLE_DEVICES": null,
+  "amp": false,
+  "autocast": false,
+  "branch": "exp/lognormal-spectral-spdhsw-v1",
+  "command_python": "/home/pikachu/miniconda3/envs/spdsw_hsw/bin/python",
+  "commit_at_invocation": "39bc01f2aec9e9cd1b5d145319c53d601cc9fd86",
+  "cwd": "/home/pikachu/coherent_sw",
+  "device": {
+    "compute_processes_before_cuda_initialization": [],
+    "name": "NVIDIA RTX A6000",
+    "physical_gpu": 3,
+    "torch_device": "cuda:3",
+    "total_memory_bytes": 50897289216
+  },
+  "dtype": "torch.float64",
+  "hostname": "affctiv",
+  "numpy": "2.2.6",
+  "pandas": "2.3.3",
+  "platform": "Linux-6.8.0-87-generic-x86_64-with-glibc2.35",
+  "python": "3.10.19",
+  "tf32_cudnn": false,
+  "tf32_matmul": false,
+  "torch": "2.11.0+cu130",
+  "torch_cuda": "13.0"
+}

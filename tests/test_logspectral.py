@@ -176,3 +176,11 @@ def test_registered_maximum_is_finite_at_L2000() -> None:
     assert bool(torch.isfinite(h.grad).all())
     assert math.isfinite(result.entropy)
     assert math.isfinite(result.ess)
+
+
+@pytest.mark.skipif(torch.cuda.device_count() <= 3, reason="physical GPU 3 unavailable")
+def test_registered_maximum_weights_on_physical_gpu3() -> None:
+    weights = lognormal_spectral_weights(2000, 1.5, "cuda:3", DTYPE)
+    assert weights.device == torch.device("cuda:3")
+    assert bool(torch.isfinite(weights).all())
+    assert float(weights.sum()) == pytest.approx(1.0, abs=3e-15)

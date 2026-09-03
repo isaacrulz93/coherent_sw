@@ -1,0 +1,26 @@
+{
+  "decision": "proceed_to_hgd_development",
+  "development": null,
+  "heldout": null,
+  "proceed_to_full_expansion": false,
+  "synthetic": {
+    "all_values_finite": true,
+    "decision": "proceed_to_hgd_development",
+    "ill_conditioning_rule": "interaction mean > 0 within each dimension's gram-condition lower half",
+    "pass": true,
+    "positive_in_condition_number_lower_half_all_dimensions_sigmas": [
+      0.5,
+      1.0,
+      1.25,
+      1.5
+    ],
+    "positive_interaction_all_dimensions_sigmas": [
+      0.5,
+      1.0,
+      1.25,
+      1.5
+    ],
+    "sigma_zero_max_ratio_error": 0.0
+  },
+  "theorem_regression": true
+}

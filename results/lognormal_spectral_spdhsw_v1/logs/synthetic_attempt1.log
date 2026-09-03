@@ -1,0 +1,9 @@
+Phase A did not begin producing scientific draw records.
+
+The first GPU invocation failed while constructing fixed spectral weights with
+`torch.special.ndtri` on cuda:3. PyTorch attempted NVRTC compilation and the
+host CUDA 13 installation lacked `libnvrtc-builtins.so.13.0`. No alternate GPU
+or dtype was used. The fixed rank weights are independent of data and costs, so
+their float64 closed-form construction was moved to CPU with an explicit copy
+to physical GPU 3 and runner-side caching. A physical-GPU-3 regression test was
+added before retrying Phase A.

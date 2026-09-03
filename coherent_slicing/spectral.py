@@ -63,14 +63,17 @@ def lognormal_spectral_weights(
     if sigma == 0.0:
         return torch.full((L,), 1.0 / L, device=target_device, dtype=dtype)
 
+    # These are fixed constants, independent of h. CPU construction avoids a
+    # CUDA NVRTC dependency for ndtri/ndtr and is copied only at the return
+    # boundary. The experiment runner caches the resulting device tensors.
     work_dtype = torch.float64
-    interior = torch.arange(1, L, device=target_device, dtype=work_dtype) / L
+    interior = torch.arange(1, L, device="cpu", dtype=work_dtype) / L
     transformed = torch.special.ndtr(torch.special.ndtri(interior) - sigma)
     edges = torch.cat(
         (
-            torch.zeros(1, device=target_device, dtype=work_dtype),
+            torch.zeros(1, device="cpu", dtype=work_dtype),
             transformed,
-            torch.ones(1, device=target_device, dtype=work_dtype),
+            torch.ones(1, device="cpu", dtype=work_dtype),
         )
     )
     weights = edges[1:] - edges[:-1]
@@ -78,7 +81,7 @@ def lognormal_spectral_weights(
         raise RuntimeError("non-finite or negative lognormal spectral cell weight")
     # Telescoping endpoints make this one in exact arithmetic. Preserve the
     # closed form; do not clip or renormalize its cells.
-    return weights.to(dtype=dtype)
+    return weights.to(device=target_device, dtype=dtype)
 
 
 def spectral_power(h: torch.Tensor, ordered_weights: torch.Tensor) -> torch.Tensor:
@@ -120,4 +123,3 @@ def lognormal_spectral_power(h: torch.Tensor, sigma: float) -> LognormalSpectral
     entropy = float(-(assigned[positive] * assigned[positive].log()).sum())
     ess = float(1.0 / assigned.square().sum())
     return LognormalSpectralResult(value, assigned, sigma, entropy, ess)
-

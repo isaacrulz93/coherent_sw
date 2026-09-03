@@ -10,7 +10,8 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=. \
   --junitxml=results/lognormal_spectral_spdhsw_v1/TEST_RESULTS.xml
 ```
 
-Result: `62 passed` in 3.25 seconds on CPU. The warnings are 73 upstream
+Final pre-experiment result: `63 passed` in 3.51 seconds. The suite ran on CPU
+except for the explicit fixed-weight smoke test on physical GPU 3. The warnings are 73 upstream
 TorchScript deprecations from imported dependencies and three pre-existing
 pytest xUnit property-format warnings; there was no failed, skipped, or xfailed
 test.
@@ -33,6 +34,8 @@ test.
   materialized normalized effective directions.
 - Assigned weights are invariant under positive rescaling of costs.
 - No NaN or Inf occurs at the registered maximum `L=2000,sigma=1.5`.
+- The registered maximum weights are finite and unit-mass after transfer to
+  physical GPU 3; this guards the exact device path used by the experiments.
 
 These are finite common-direction and implementation regressions. They do not
 assert metricity for independently resampled realized direction banks or that a
