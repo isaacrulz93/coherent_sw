@@ -1,0 +1,54 @@
+{
+  "calibrated_before_comparative_training": true,
+  "eta_power_reference": 3000.0,
+  "eta_root": 589.1072495305888,
+  "median_G_root": 0.004742233099863497,
+  "median_U_power": 2.793683898093503,
+  "root_epsilon": 0.0,
+  "rule": "eta_root = median_subject(||-3000 grad F_uniform||) / median_subject(||grad sqrt(F_uniform)||)",
+  "subject_values": [
+    {
+      "G_root": 0.004552589277008754,
+      "N_proj": 500,
+      "U_power": 1.8473030604258918,
+      "aggregation": "uniform",
+      "bank_hash": "2b1b45e4e4a812f6d748c2c175962332f0dbca2acd50b6a4d146c963428b0e9a",
+      "bank_seed": 6398,
+      "dataset": "BNCI2014_001",
+      "power_gradient_norm": 0.0006157676868086306,
+      "power_objective": 0.0045735860696544456,
+      "rooted_distance": 0.06762829341077924,
+      "seed": 6398,
+      "subject": 1
+    },
+    {
+      "G_root": 0.004755756738614163,
+      "N_proj": 500,
+      "U_power": 2.793683898093503,
+      "aggregation": "uniform",
+      "bank_hash": "2b1b45e4e4a812f6d748c2c175962332f0dbca2acd50b6a4d146c963428b0e9a",
+      "bank_seed": 6398,
+      "dataset": "BNCI2014_001",
+      "power_gradient_norm": 0.0009312279660311677,
+      "power_objective": 0.009585455706095446,
+      "rooted_distance": 0.0979053405391935,
+      "seed": 6398,
+      "subject": 3
+    },
+    {
+      "G_root": 0.004742233099863497,
+      "N_proj": 500,
+      "U_power": 2.9953879064351767,
+      "aggregation": "uniform",
+      "bank_hash": "2b1b45e4e4a812f6d748c2c175962332f0dbca2acd50b6a4d146c963428b0e9a",
+      "bank_seed": 6398,
+      "dataset": "BNCI2014_001",
+      "power_gradient_norm": 0.0009984626354783922,
+      "power_objective": 0.011082502765155301,
+      "rooted_distance": 0.10527346657707867,
+      "seed": 6398,
+      "subject": 8
+    }
+  ],
+  "uniform_only": true
+}

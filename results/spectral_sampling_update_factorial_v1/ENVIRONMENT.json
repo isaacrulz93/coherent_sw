@@ -1,0 +1,24 @@
+{
+  "CUDA_VISIBLE_DEVICES": null,
+  "amp": false,
+  "autocast": false,
+  "branch": "exp/spectral-sampling-update-factorial-v1",
+  "commit_at_prepare": "114a8ada95a54f2a774281b88db9ae00212bb18f",
+  "cuda_runtime": "13.0",
+  "device": {
+    "compute_processes_before_initialization": [],
+    "name": "NVIDIA RTX A6000",
+    "physical_gpu": 2,
+    "torch_device": "cuda:3",
+    "total_memory_bytes": 50897289216,
+    "uuid": "38dcbe00-6c8c-870a-83da-4ff0c96538b8"
+  },
+  "dtype": "torch.float64",
+  "hostname": "affctiv",
+  "platform": "Linux-6.8.0-87-generic-x86_64-with-glibc2.35",
+  "python": "3.10.19",
+  "python_executable": "/home/pikachu/miniconda3/envs/spdsw_hsw/bin/python",
+  "tf32_cudnn": false,
+  "tf32_matmul": false,
+  "torch": "2.11.0+cu130"
+}
