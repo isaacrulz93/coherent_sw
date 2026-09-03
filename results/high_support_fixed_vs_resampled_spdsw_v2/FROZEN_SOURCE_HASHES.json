@@ -1,0 +1,35 @@
+{
+  "cache_sha256": {
+    "/home/pikachu/EBSPDSW/results/pilot_hgd/data_cache/BNCI2014_001/subject_01_logs.pt": "a6e2edb732c9f09f12ba094fcfbfd5a6cc7608fbe280a82956e7f7b28b5521bb",
+    "/home/pikachu/EBSPDSW/results/pilot_hgd/data_cache/BNCI2014_001/subject_03_logs.pt": "f913863f3da0902093665fba446da4b61e74dbd155eb5a2f53fa8851b9eabd39",
+    "/home/pikachu/EBSPDSW/results/pilot_hgd/data_cache/BNCI2014_001/subject_08_logs.pt": "cd8a839a423b8d1be231cd482c70cbf022bc8b3e13bfcab3414bc5a871ad001f",
+    "/home/pikachu/EBSPDSW/results/pilot_hgd/data_cache/Schirrmeister2017/subject_01_logs.pt": "8c077c701f42b11b7f8045ac4c204f3359f4fa34063000c9b1a6bd981158aabd",
+    "/home/pikachu/EBSPDSW/results/pilot_hgd/data_cache/Schirrmeister2017/subject_02_logs.pt": "a525a666f3e4cc19252a34a48415f2b915b5de395cdc5664c093fee81cef9567",
+    "/home/pikachu/EBSPDSW/results/pilot_hgd/data_cache/Schirrmeister2017/subject_03_logs.pt": "eba1245d3a947c4a01f9df22028b494fe830acba2a0d832930d79139c496be94",
+    "/home/pikachu/EBSPDSW/results/pilot_hgd/data_cache/Schirrmeister2017/subject_04_logs.pt": "f837b6ac6dcfa1193b3a7b8f2fd1f08d8de270289d69ec96110eea7b95dc8f88",
+    "/home/pikachu/EBSPDSW/results/pilot_hgd/data_cache/Schirrmeister2017/subject_07_logs.pt": "446a0c4047135a678f50f33cedb6df0030a16db4495e0fd7f52dbbacc9e39ed4",
+    "/home/pikachu/EBSPDSW/results/pilot_hgd/data_cache/Schirrmeister2017/subject_14_logs.pt": "f2c5542380e274ee1d7a5da9aca02b1cd59c79d5839b88eb67acc3b6b8503ba9"
+  },
+  "frozen_branch_heads": {
+    "exp/fixed-vs-resampled-spectral-spdsw-v1": "ec4a68af6107b3522d5e841dd35f708402a6378b",
+    "exp/lognormal-spectral-spdhsw-v1": "b0e5b47e17d45a94f39b2b5ba08fa965a5d3a77c",
+    "main": "4edf5dda470c5e525c5feb274462414751348b4b"
+  },
+  "prior_result_tree_sha256": {
+    "/home/pikachu/coherent_sw/results/coherent_sw_overnight": "7d840778efb9f95d6a255961d234a65ce8af55077fa96fa27d8358ce5dd47f48",
+    "/home/pikachu/coherent_sw/results/fixed_vs_resampled_spectral_spdsw_v1": "9eaadb1b5b6136cd418065db22e06cd90387d21ed8529f72ff9a2fbc40e8e451",
+    "/home/pikachu/coherent_sw/results/lognormal_spectral_spdhsw_v1": "baa0352a347ca49bc522a6e375755791d464220af5769f7f756d49b2129864e9"
+  },
+  "source_sha256": {
+    "/home/pikachu/EBSPDSW/evobank/data.py": "17f0e97ac34edd7a71da696e5ae02b5ec4c253852c45547e6cb71ba2b9a2c6dd",
+    "/home/pikachu/EBSPDSW/evobank/lew.py": "4b8b64311b47bc6a438a8fd1e93b9906f2da9f1642a558745aaf580ea12d5a63",
+    "/home/pikachu/EBSPDSW/evobank/ot1d.py": "a5ab21c6f9d0f58cd8aaf2ae0caca077ad035fadbb45a6c87e47ff6a933cb958",
+    "/home/pikachu/EBSPDSW/evobank/svec.py": "98becc334f71404d6ff3aec00f81f4e444f9b84d747edee03584d5bd243175ea",
+    "/home/pikachu/coherent_sw/coherent_slicing/aggregations.py": "fa11e9e303357495ee79ba0c601e6427f87e4872ec89a6a4ceaf73a7fdfd2c8a",
+    "/home/pikachu/coherent_sw/coherent_slicing/spectral.py": "0de169a3b9cef64c2929727a946cd3a6202a7ba39a2ceca09d312db3a985e1ee",
+    "/home/pikachu/coherent_sw/experiments/run_fixed_vs_resampled_spectral_spdsw.py": "8aec500c02a8f3a1a969380a689310746d101413ebc5135c6c5e17c95e64e877",
+    "/home/pikachu/coherent_sw/experiments/run_logspectral_spdhsw.py": "268e31293d17f2c721ec598e3cee8482931ddf6254e8018ad6354985b2658964",
+    "/home/pikachu/coherent_sw/experiments/run_moabb_pilot.py": "c85a466d30e696a05271cf2519e2fc57f9cd4f6a5d6388b6c460a91b1b0b208c",
+    "/home/pikachu/coherent_sw/experiments/run_overnight.py": "1a4a4e81d3b4f5727ebd816a638d77f5e682b3d927a9fbb2b4b9ad57bb3a7954"
+  }
+}

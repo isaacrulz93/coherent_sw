@@ -1,0 +1,73 @@
+{
+  "AUC_2000": 0.7805147837425137,
+  "AUC_5000": 0.7545102279503216,
+  "Final_2000": 60.17303854463069,
+  "Final_5000": 57.61855025181015,
+  "auc_condition": false,
+  "final_condition": false,
+  "rule": "select 2000 iff mean resampled relative-LEW AUC_2000 <= 1.01*AUC_5000 and mean resampled Final_2000 <= 1.01*Final_5000; otherwise select 5000",
+  "selected_N_proj_HGD": 5000,
+  "selection_deterministic": true,
+  "support_table": [
+    {
+      "N_proj": 500,
+      "fixed_mean_final_lew": 83.16103695177843,
+      "fixed_mean_independent_lew_reduction_pct": 1.4725766532024884,
+      "fixed_mean_overfit_gap": 94.95806486057084,
+      "fixed_mean_relative_lew_auc": 0.987164621335888,
+      "fixed_mean_training_loss_reduction_pct": 96.43064151377332,
+      "fixed_mean_wall_ms": 3262.3855042426535,
+      "fixed_minus_resampled_auc": 0.15675939016076335,
+      "fixed_minus_resampled_final_lew": 19.77886263322086,
+      "fixed_minus_resampled_wall_ms": -413.90759117590915,
+      "resampled_mean_final_lew": 63.38217431855757,
+      "resampled_mean_relative_lew_auc": 0.8304052311751247,
+      "resampled_mean_wall_ms": 3676.2930954185626
+    },
+    {
+      "N_proj": 1000,
+      "fixed_mean_final_lew": 82.06278048286163,
+      "fixed_mean_independent_lew_reduction_pct": 2.7787865131563776,
+      "fixed_mean_overfit_gap": 95.31076840606164,
+      "fixed_mean_relative_lew_auc": 0.9757004340297463,
+      "fixed_mean_training_loss_reduction_pct": 98.08955491921802,
+      "fixed_mean_wall_ms": 5796.939933362107,
+      "fixed_minus_resampled_auc": 0.172636266821229,
+      "fixed_minus_resampled_final_lew": 20.14653442010129,
+      "fixed_minus_resampled_wall_ms": -883.0812155889962,
+      "resampled_mean_final_lew": 61.91624606276034,
+      "resampled_mean_relative_lew_auc": 0.8030641672085173,
+      "resampled_mean_wall_ms": 6680.021148951103
+    },
+    {
+      "N_proj": 2000,
+      "fixed_mean_final_lew": 79.73371347475023,
+      "fixed_mean_independent_lew_reduction_pct": 5.539557766627753,
+      "fixed_mean_overfit_gap": 93.4320353317861,
+      "fixed_mean_relative_lew_auc": 0.9515210280322078,
+      "fixed_mean_training_loss_reduction_pct": 98.97159309841383,
+      "fixed_mean_wall_ms": 11438.204937924942,
+      "fixed_minus_resampled_auc": 0.17100624428969424,
+      "fixed_minus_resampled_final_lew": 19.560674930119525,
+      "fixed_minus_resampled_wall_ms": -1573.3145030681044,
+      "resampled_mean_final_lew": 60.17303854463071,
+      "resampled_mean_relative_lew_auc": 0.7805147837425136,
+      "resampled_mean_wall_ms": 13011.519440993046
+    },
+    {
+      "N_proj": 5000,
+      "fixed_mean_final_lew": 73.82642687689064,
+      "fixed_mean_independent_lew_reduction_pct": 12.541391250327905,
+      "fixed_mean_overfit_gap": 86.80259595290784,
+      "fixed_mean_relative_lew_auc": 0.8903412916036536,
+      "fixed_mean_training_loss_reduction_pct": 99.34398720323576,
+      "fixed_mean_wall_ms": 27940.17137424089,
+      "fixed_minus_resampled_auc": 0.13583106365333197,
+      "fixed_minus_resampled_final_lew": 16.207876625080488,
+      "fixed_minus_resampled_wall_ms": -3970.7184133585542,
+      "resampled_mean_final_lew": 57.61855025181015,
+      "resampled_mean_relative_lew_auc": 0.7545102279503216,
+      "resampled_mean_wall_ms": 31910.889787599444
+    }
+  ]
+}

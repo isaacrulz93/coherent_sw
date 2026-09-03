@@ -1,0 +1,159 @@
+{
+  "branch": "exp/high-support-fixed-vs-resampled-spdsw-v2",
+  "calibration": {
+    "epochs": 100,
+    "lew_epochs": [
+      0,
+      25,
+      50,
+      75,
+      100
+    ],
+    "methods": [
+      "fixed_uniform",
+      "resampled_uniform"
+    ],
+    "seed": 6398,
+    "selection_rule": "select 2000 iff mean resampled relative-LEW AUC_2000 <= 1.01*AUC_5000 and mean resampled Final_2000 <= 1.01*Final_5000; otherwise select 5000",
+    "subjects": [
+      2,
+      3,
+      4
+    ]
+  },
+  "classifications": {
+    "factor_preference": "favorable grand mean and favorable subject-mean sign in at least 2/3 development subjects; otherwise TIE or NULL",
+    "overfitting": "SEVERE if mean overfit gap >=50 percentage points; REDUCED if >5; ABSENT if <=5",
+    "quality_equivalent": "mean fixed relative-LEW AUC <=1.01*mean paired resampled AUC and mean fixed final LEW <=1.02*mean paired resampled final LEW",
+    "wall_clock_advantage": "on aggregate mean evaluation curves, fixed reaches the paired resampled epoch-500 mean LEW and has lower mean cumulative optimization wall-clock at first reach"
+  },
+  "controls": {
+    "BNCI_eta_norm": 2.793683898093503,
+    "BNCI_eta_norm_rule": "median initial raw uniform-SPDSW update norm under LR=3000, subjects 1,3,8, seed 6398, resampled uniform N_proj=500",
+    "BNCI_eta_norm_source": "BNCI_NORMALIZED_STEP.json",
+    "HGD_eta_norm": 7.3473173386245945,
+    "HGD_eta_norm_source": "results/coherent_sw_overnight/SCALE_MATCHED_CONFIG.json: frozen audited direct-SPDSW dataset-specific normalized step",
+    "early_stopping": false,
+    "gradient_clipping": false,
+    "method_specific_step": false,
+    "primary": "normalized_update",
+    "raw_learning_rate": 3000.0,
+    "secondary": "raw_sgd_lr3000"
+  },
+  "created_before_scientific_runs": true,
+  "datasets": {
+    "BNCI2014_001": {
+      "N_proj": 500,
+      "d": 22,
+      "epochs": 500,
+      "m": 253,
+      "seeds": [
+        6398,
+        3654,
+        1788
+      ],
+      "subjects": [
+        1,
+        3,
+        8
+      ]
+    },
+    "Schirrmeister2017": {
+      "allowed_final_N_proj": [
+        2000,
+        5000
+      ],
+      "calibration_N_proj": [
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "d": 128,
+      "development_subjects": [
+        2,
+        3,
+        4
+      ],
+      "epochs": 500,
+      "heldout_subjects_if_gate_passes": [
+        1,
+        7,
+        14
+      ],
+      "m": 8256,
+      "seeds": [
+        6398,
+        3654,
+        1788
+      ]
+    }
+  },
+  "direct_only": true,
+  "evaluation": {
+    "epochs": [
+      0,
+      25,
+      50,
+      75,
+      100,
+      125,
+      150,
+      175,
+      200,
+      225,
+      250,
+      275,
+      300,
+      325,
+      350,
+      375,
+      400,
+      425,
+      450,
+      475,
+      500
+    ],
+    "excluded_from_optimization_wall_clock": true,
+    "kind": "independent exact Log-Euclidean Wasserstein"
+  },
+  "factorial": {
+    "aggregation": [
+      "uniform",
+      "lognormal_spectral_sigma_0.5"
+    ],
+    "fixed_uniform_spectral_share_bank": true,
+    "resampled_uniform_spectral_share_epoch_bank": true,
+    "same_N_proj_within_dataset": true,
+    "sampling": [
+      "fixed",
+      "resampled_each_epoch"
+    ],
+    "sigma": 0.5,
+    "sigma_search": false
+  },
+  "heldout_gate": [
+    "fixed uniform or fixed spectral is development quality-equivalent",
+    "no material fixed-method divergence/NaN increase",
+    "normalized-update result supports the conclusion",
+    "no post-hoc N_proj or sigma change",
+    "actual aggregate matched-quality wall-clock benefit exists"
+  ],
+  "hierarchical_methods": false,
+  "registered_trajectory_counts": {
+    "BNCI_per_control": 36,
+    "HGD_development_per_control": 36,
+    "HGD_heldout_per_control_if_gate": 36,
+    "HGD_support_calibration": 24
+  },
+  "stop_rules": [
+    "no added N_proj",
+    "no added sigma",
+    "no LR tuning",
+    "no preprocessing change",
+    "no subject change",
+    "no hierarchical methods",
+    "no new adaptive weighting"
+  ],
+  "version": "high_support_fixed_vs_resampled_spdsw_v2"
+}

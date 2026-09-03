@@ -1,0 +1,46 @@
+{
+  "eta_norm": 2.793683898093503,
+  "rule": "median initial raw uniform-SPDSW update norm under LR=3000, subjects 1,3,8, seed 6398, resampled uniform N_proj=500",
+  "selected_before_comparative_outcomes": true,
+  "values": [
+    {
+      "N_proj": 500,
+      "bank_hash": "2b1b45e4e4a812f6d748c2c175962332f0dbca2acd50b6a4d146c963428b0e9a",
+      "bank_seed": 6398,
+      "dataset": "BNCI2014_001",
+      "initial_loss": 0.0045735860696544456,
+      "method": "resampled_uniform_N500",
+      "raw_gradient_norm": 0.0006157676868086306,
+      "raw_lr": 3000.0,
+      "raw_update_norm": 1.8473030604258918,
+      "seed": 6398,
+      "subject": 1
+    },
+    {
+      "N_proj": 500,
+      "bank_hash": "2b1b45e4e4a812f6d748c2c175962332f0dbca2acd50b6a4d146c963428b0e9a",
+      "bank_seed": 6398,
+      "dataset": "BNCI2014_001",
+      "initial_loss": 0.009585455706095446,
+      "method": "resampled_uniform_N500",
+      "raw_gradient_norm": 0.0009312279660311677,
+      "raw_lr": 3000.0,
+      "raw_update_norm": 2.793683898093503,
+      "seed": 6398,
+      "subject": 3
+    },
+    {
+      "N_proj": 500,
+      "bank_hash": "2b1b45e4e4a812f6d748c2c175962332f0dbca2acd50b6a4d146c963428b0e9a",
+      "bank_seed": 6398,
+      "dataset": "BNCI2014_001",
+      "initial_loss": 0.011082502765155301,
+      "method": "resampled_uniform_N500",
+      "raw_gradient_norm": 0.0009984626354783922,
+      "raw_lr": 3000.0,
+      "raw_update_norm": 2.9953879064351767,
+      "seed": 6398,
+      "subject": 8
+    }
+  ]
+}
