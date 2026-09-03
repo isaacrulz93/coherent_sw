@@ -1,0 +1,24 @@
+{
+  "CUDA_VISIBLE_DEVICES": null,
+  "amp": false,
+  "autocast": false,
+  "branch": "exp/fixed-vs-resampled-spectral-spdsw-v1",
+  "commit_at_prepare": "b0e5b47e17d45a94f39b2b5ba08fa965a5d3a77c",
+  "cuda_runtime": "13.0",
+  "device": {
+    "compute_processes_before_initialization": [],
+    "name": "NVIDIA RTX 6000 Ada Generation",
+    "physical_gpu": 3,
+    "torch_device": "cuda:1",
+    "total_memory_bytes": 50865307648,
+    "uuid": "f8e60a29-aeb0-a698-05b5-92f1db3438e7"
+  },
+  "dtype": "torch.float64",
+  "hostname": "affctiv",
+  "platform": "Linux-6.8.0-87-generic-x86_64-with-glibc2.35",
+  "python": "3.10.19",
+  "python_executable": "/home/pikachu/miniconda3/envs/spdsw_hsw/bin/python",
+  "tf32_cudnn": false,
+  "tf32_matmul": false,
+  "torch": "2.11.0+cu130"
+}

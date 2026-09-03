@@ -1,0 +1,93 @@
+{
+  "branch": "exp/fixed-vs-resampled-spectral-spdsw-v1",
+  "classification": {
+    "factor_preference": "requires favorable subject-mean sign in at least 2/3 subjects and favorable grand mean; otherwise TIE/NULL",
+    "lower_auc_is_better": true,
+    "wall_clock_advantage": "for at least one resampled k40 comparator, fixed spectral reaches that comparator's epoch-500 LEW earlier in >=6/9 runs and >=2/3 subject means"
+  },
+  "controls": {
+    "method_specific_lr": false,
+    "normalized_step_target": 7.3473173386245945,
+    "normalized_target_source": "frozen direct coherent overnight SCALE_MATCHED_CONFIG.json",
+    "primary": "normalized_update",
+    "raw_learning_rate": 3000.0,
+    "secondary": "raw_sgd_lr3000"
+  },
+  "created_before_scientific_runs": true,
+  "dataset": "Schirrmeister2017",
+  "development_expected_runs": {
+    "factorial": 72,
+    "reference": 18,
+    "total": 90
+  },
+  "development_subjects": [
+    2,
+    3,
+    4
+  ],
+  "device": "physical GPU 3 / PyTorch cuda:1 / UUID-verified",
+  "dtype": "torch.float64",
+  "epochs": 500,
+  "factorial": {
+    "aggregation": [
+      "uniform",
+      "lognormal_spectral_sigma_0.5"
+    ],
+    "k": 40,
+    "methods": [
+      "fixed_spdsw_k40",
+      "resampled_spdsw_k40",
+      "fixed_lns_k40_s0p5",
+      "resampled_lns_k40_s0p5"
+    ],
+    "no_hierarchy": true,
+    "sampling": [
+      "fixed",
+      "resampled_each_epoch"
+    ]
+  },
+  "fixed_bank": {
+    "sample_once": true,
+    "target_projection_cached": true,
+    "uniform_and_spectral_share_tensor": true
+  },
+  "heldout_gate": [
+    "fixed spectral improves fixed uniform in >=2/3 development subject means",
+    "grand mean paired normalized AUC difference is negative",
+    "fixed spectral divergence/NaN count does not exceed fixed uniform",
+    "all nonzero normalized applied update norms match the common target within 1e-10 relative",
+    "fixed spectral has the preregistered wall-clock advantage over a resampled k40 comparator",
+    "k and sigma remain frozen"
+  ],
+  "heldout_subjects_if_gate_passes": [
+    1,
+    7,
+    14
+  ],
+  "lew_every": 25,
+  "prohibited": [
+    "hierarchical mixtures",
+    "sigma or k search",
+    "gradient clipping",
+    "method-specific learning rates",
+    "outcome-triggered early stopping",
+    "heldout or BNCI before a passing development gate"
+  ],
+  "reference": {
+    "factorial_member": false,
+    "k": 500,
+    "method": "resampled_spdsw_l500_reference",
+    "resampled_each_epoch": true,
+    "reuse_decision": "rerun: no frozen trajectory matches development subjects x all seeds x 500 epochs x both controls"
+  },
+  "resampled_bank": {
+    "seed_sequence": "seed + epoch_zero_based*(epoch_zero_based+1)/2",
+    "uniform_and_spectral_share_epoch_bank": true
+  },
+  "seeds": [
+    6398,
+    3654,
+    1788
+  ],
+  "version": "fixed_vs_resampled_spectral_spdsw_v1"
+}
