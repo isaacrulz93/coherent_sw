@@ -1,0 +1,38 @@
+{
+  "bnci_executed": false,
+  "decision": "stop_after_development_gate",
+  "development": {
+    "bank_audit_pass": true,
+    "case": "C_resampling_remains_superior",
+    "conditions": {
+      "fixed_spectral_improves_at_least_2_subjects": true,
+      "fixed_spectral_mean_auc_difference_favorable": true,
+      "fixed_spectral_wall_clock_advantage": false,
+      "no_material_instability_increase": true,
+      "no_posthoc_hyperparameter_change": true,
+      "normalized_update_norms_matched": true
+    },
+    "decision": "stop_after_development_gate",
+    "fixed_spectral_improved_subjects": 3,
+    "fixed_spectral_wall_clock_advantage": false,
+    "fixed_vs_resampled_result": "RESAMPLED",
+    "mean_fixed_spectral_paired_auc_difference": -6.582406313767238e-05,
+    "pass": false,
+    "spectral_under_fixed": "IMPROVE",
+    "spectral_under_resampled": "WORSE",
+    "wall_clock_comparators": {
+      "resampled_lns_k40_s0p5": {
+        "favorable_runs": 0,
+        "favorable_subjects": 0,
+        "passes": false
+      },
+      "resampled_spdsw_k40": {
+        "favorable_runs": 0,
+        "favorable_subjects": 0,
+        "passes": false
+      }
+    }
+  },
+  "heldout": null,
+  "proceed_to_hierarchy": false
+}

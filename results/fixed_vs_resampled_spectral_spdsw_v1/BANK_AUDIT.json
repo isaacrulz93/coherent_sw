@@ -1,0 +1,33 @@
+{
+  "bank_hash_examples": {
+    "fixed": "aa21be348025a3373ab46463f83eaa0e40888f61f07235debb4d832dfbff4f97",
+    "resampled_epoch1": "aa21be348025a3373ab46463f83eaa0e40888f61f07235debb4d832dfbff4f97",
+    "resampled_epoch500": "3d4ff2c5ed30bf2738d1702a9b8168ff0680ef08fd34c8b894d8340ff89bb97b"
+  },
+  "bank_hash_kind_primary": "full_tensor_sha256",
+  "evaluation_kind": "exact LEW with no projection directions",
+  "fixed_epoch_direction_sampling_ms_max": 0.0,
+  "fixed_epoch_target_projection_ms_max": 0.0,
+  "fixed_pair_bank_hash_equal_all_epochs": true,
+  "fixed_pair_target_hash_equal_all_epochs": true,
+  "fixed_unique_bank_hash_counts": [
+    1
+  ],
+  "fixed_unique_target_hash_counts": [
+    1
+  ],
+  "initial_lew_max_spread_across_methods": 0.0,
+  "no_hierarchy_method": true,
+  "normalized_update_max_relative_error": 2.4176944557192375e-16,
+  "pass": true,
+  "primary_k_values": [
+    40
+  ],
+  "resampled_direction_sampling_ms_min": 0.1772120594978332,
+  "resampled_pair_bank_hash_equal_all_epochs": true,
+  "resampled_pair_target_hash_equal_all_epochs": true,
+  "resampled_target_projection_ms_min": 0.2011219039559364,
+  "resampled_unique_bank_hash_counts": [
+    500
+  ]
+}
